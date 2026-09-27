@@ -1,0 +1,958 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+:root {
+
+    --orange: #ff6b00;
+    --orange-dark: #e85d00;
+
+    --purple: #6c4cff;
+
+    --background: #f6f7fb;
+
+    --card: #ffffff;
+
+    --header: #ffffff;
+
+    --text: #242424;
+
+    --muted: #777;
+
+    --border: #eeeeee;
+
+}
+
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background: var(--background);
+
+    color: var(--text);
+
+    transition:
+        background-color .4s ease,
+        color .4s ease;
+
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+
+header {
+
+    background: var(--header);
+
+    padding: 18px 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 35px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    transition:
+        background-color .4s ease,
+        border-color .4s ease;
+
+}
+
+
+.logo {
+
+    font-size: 28px;
+
+    font-weight: 900;
+
+    color: var(--orange);
+
+    letter-spacing: -1px;
+
+}
+
+
+.search-box {
+
+    flex: 1;
+
+    max-width: 600px;
+
+}
+
+
+.search-box input {
+
+    width: 100%;
+
+    padding: 14px 20px;
+
+    border:
+        2px solid var(--border);
+
+    border-radius: 14px;
+
+    background: var(--card);
+
+    color: var(--text);
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        background-color .4s ease,
+        color .4s ease,
+        border-color .25s ease;
+
+}
+
+
+.search-box input:focus {
+
+    border-color: var(--orange);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(255,107,0,.1);
+
+}
+
+
+.search-box input::placeholder {
+
+    color: var(--muted);
+
+}
+
+
+/* =========================
+   TEMA KAPSÜLÜ
+========================= */
+
+
+.theme-switch {
+
+    width: 86px;
+
+    height: 44px;
+
+    border-radius: 999px;
+
+    background: #eeeeee;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 4px;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+
+    box-shadow:
+        inset 0 1px 4px
+        rgba(0,0,0,.12);
+
+    transition:
+        background-color .4s ease;
+
+}
+
+
+/* İKONLAR */
+
+.theme-icon {
+
+    width: 36px;
+
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 17px;
+
+    position: relative;
+
+    z-index: 2;
+
+    user-select: none;
+
+}
+
+
+/* KAYAN TOP */
+
+.theme-slider {
+
+    position: absolute;
+
+    width: 36px;
+
+    height: 36px;
+
+    left: 4px;
+
+    top: 4px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    box-shadow:
+        0 2px 7px
+        rgba(0,0,0,.2);
+
+    transition:
+        transform .4s
+        cubic-bezier(.4,0,.2,1);
+
+}
+
+
+/* KOYU TEMA */
+
+body.dark-theme .theme-switch {
+
+    background: #292c34;
+
+}
+
+
+body.dark-theme .theme-slider {
+
+    transform: translateX(42px);
+
+    background: #3b3f4a;
+
+}
+
+
+/* =========================
+   KATEGORİLER
+========================= */
+
+
+.categories {
+
+    background: var(--header);
+
+    padding: 14px 45px;
+
+    display: flex;
+
+    gap: 10px;
+
+    overflow-x: auto;
+
+    border-bottom:
+        1px solid var(--border);
+
+    transition:
+        background-color .4s ease,
+        border-color .4s ease;
+
+}
+
+
+.category {
+
+    border: none;
+
+    padding: 10px 18px;
+
+    border-radius: 30px;
+
+    background: #f1f2f6;
+
+    color: #333;
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition: .25s;
+
+}
+
+
+.category:hover {
+
+    background: #ffe4d0;
+
+    color: var(--orange);
+
+}
+
+
+.category.active {
+
+    background: var(--orange);
+
+    color: white;
+
+    box-shadow:
+        0 5px 15px
+        rgba(255,107,0,.25);
+
+}
+
+
+/* =========================
+   ANA ALAN
+========================= */
+
+
+main {
+
+    max-width: 1250px;
+
+    margin: auto;
+
+    padding: 40px 25px;
+
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+
+.hero {
+
+    background:
+        linear-gradient(
+            120deg,
+            #ff6b00,
+            #ff8a00,
+            #6c4cff
+        );
+
+    color: white;
+
+    padding: 35px;
+
+    border-radius: 22px;
+
+    margin-bottom: 32px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 12px 35px
+        rgba(108,76,255,.18);
+
+}
+
+
+.hero::after {
+
+    content: "🔥";
+
+    position: absolute;
+
+    right: 45px;
+
+    top: 15px;
+
+    font-size: 90px;
+
+    opacity: .2;
+
+    transform: rotate(10deg);
+
+}
+
+
+.hero h1 {
+
+    font-size: 34px;
+
+    margin-bottom: 8px;
+
+}
+
+
+.hero p {
+
+    font-size: 16px;
+
+    opacity: .9;
+
+}
+
+
+/* =========================
+   FIRSAT GRID
+========================= */
+
+
+.deal-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 24px;
+
+}
+
+
+/* =========================
+   KART
+========================= */
+
+
+.deal-card {
+
+    background: var(--card);
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    border:
+        1px solid var(--border);
+
+    display: flex;
+
+    flex-direction: column;
+
+    position: relative;
+
+    transition:
+        transform .25s,
+        box-shadow .25s,
+        background-color .4s ease,
+        border-color .4s ease;
+
+}
+
+
+.deal-card:hover {
+
+    transform:
+        translateY(-7px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(0,0,0,.12);
+
+}
+
+
+/* =========================
+   ÜRÜN GÖRSELİ
+========================= */
+
+
+.deal-image {
+
+    height: 235px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff7f0,
+            #f5f2ff
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 22px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    transition:
+        background .4s ease,
+        border-color .4s ease;
+
+}
+
+
+.deal-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    transition:
+        transform .3s;
+
+}
+
+
+.deal-card:hover
+.deal-image img {
+
+    transform:
+        scale(1.06);
+
+}
+
+
+/* =========================
+   İÇERİK
+========================= */
+
+
+.deal-content {
+
+    padding: 19px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    flex: 1;
+
+}
+
+
+.deal-category {
+
+    display: inline-block;
+
+    width: fit-content;
+
+    background: #f0edff;
+
+    color: var(--purple);
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    margin-bottom: 9px;
+
+}
+
+
+.deal-content h2 {
+
+    font-size: 18px;
+
+    line-height: 1.4;
+
+    margin-bottom: 12px;
+
+    min-height: 50px;
+
+}
+
+
+/* =========================
+   İNDİRİM
+========================= */
+
+
+.discount {
+
+    width: fit-content;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff4d4d,
+            #ff7300
+        );
+
+    color: white;
+
+    padding: 6px 10px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    margin-bottom: 12px;
+
+}
+
+
+/* =========================
+   FİYATLAR
+========================= */
+
+
+.prices {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 17px;
+
+}
+
+
+.old-price {
+
+    color: #999;
+
+    text-decoration: line-through;
+
+    font-size: 14px;
+
+}
+
+
+.new-price {
+
+    color: var(--orange);
+
+    font-size: 25px;
+
+    font-weight: 900;
+
+}
+
+
+/* =========================
+   BUTON
+========================= */
+
+
+.deal-button {
+
+    margin-top: auto;
+
+    display: block;
+
+    width: 100%;
+
+    padding: 13px;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--orange),
+            #ff8a00
+        );
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    transition: .2s;
+
+}
+
+
+.deal-button:hover {
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* =========================
+   BOŞ MESAJ
+========================= */
+
+
+#emptyMessage {
+
+    display: none;
+
+    text-align: center;
+
+    padding: 60px 20px;
+
+    color: var(--muted);
+
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+
+footer {
+
+    margin-top: 50px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    background: #171717;
+
+    color: #aaa;
+
+}
+
+
+footer strong {
+
+    color: var(--orange);
+
+}
+
+
+/* =================================================
+   KOYU TEMA
+================================================= */
+
+
+body.dark-theme {
+
+    --background: #101114;
+
+    --card: #1a1c21;
+
+    --header: #17191e;
+
+    --text: #f2f2f2;
+
+    --muted: #999;
+
+    --border: #2b2e35;
+
+}
+
+
+/* Koyu tema kategoriler */
+
+body.dark-theme .category {
+
+    background: #292c33;
+
+    color: #ddd;
+
+}
+
+
+body.dark-theme
+.category:hover {
+
+    background: #373b45;
+
+    color: #ff8a00;
+
+}
+
+
+/* Koyu tema ürün görseli */
+
+body.dark-theme .deal-image {
+
+    background:
+        linear-gradient(
+            135deg,
+            #24262c,
+            #211f2e
+        );
+
+}
+
+
+/* Koyu tema kategori etiketi */
+
+body.dark-theme .deal-category {
+
+    background: #302b52;
+
+    color: #a99aff;
+
+}
+
+
+/* Koyu tema footer */
+
+body.dark-theme footer {
+
+    background: #090a0c;
+
+}
+
+
+/* =================================================
+   TABLET
+================================================= */
+
+
+@media (max-width: 900px) {
+
+    header {
+
+        padding:
+            18px 25px;
+
+    }
+
+
+    .deal-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+/* =================================================
+   TELEFON
+================================================= */
+
+
+@media (max-width: 600px) {
+
+    header {
+
+        flex-wrap: wrap;
+
+        padding:
+            16px 20px;
+
+        gap: 14px;
+
+    }
+
+
+    .logo {
+
+        font-size: 25px;
+
+    }
+
+
+    .search-box {
+
+        order: 3;
+
+        width: 100%;
+
+        max-width: none;
+
+    }
+
+
+    .theme-switch {
+
+        margin-left: auto;
+
+    }
+
+
+    .categories {
+
+        padding:
+            13px 18px;
+
+    }
+
+
+    main {
+
+        padding:
+            25px 15px;
+
+    }
+
+
+    .hero {
+
+        padding:
+            28px 23px;
+
+    }
+
+
+    .hero h1 {
+
+        font-size: 27px;
+
+    }
+
+
+    .hero::after {
+
+        right: 10px;
+
+        font-size: 65px;
+
+    }
+
+
+    .deal-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .deal-image {
+
+        height: 260px;
+
+    }
+
+  .click-count {
+    margin: 10px 0 14px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}

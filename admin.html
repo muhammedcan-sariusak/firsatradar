@@ -1,0 +1,4820 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FırsatRadar | Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --bg:#0d0d10;
+  --panel:#151519;
+  --panel2:#1b1b20;
+  --border:#2d2d35;
+  --text:#f5f5f7;
+  --muted:#9b9ba5;
+  --orange:#ff7a00;
+  --orange2:#ff9a3d;
+  --green:#28c76f;
+  --red:#ff4d4f;
+  --blue:#4d8dff;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* LOGIN */
+
+#loginPage{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.login-box{
+  width:100%;
+  max-width:420px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:30px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.logo{
+  font-size:28px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.logo span,
+.header-logo span{
+  color:var(--orange);
+}
+
+.subtitle{
+  color:var(--muted);
+  margin-bottom:25px;
+}
+
+/* HEADER */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(13,13,16,.92);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+
+.header-inner{
+  max-width:1500px;
+  margin:auto;
+  min-height:70px;
+  padding:0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.header-logo{
+  font-size:22px;
+  font-weight:800;
+}
+
+.header-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* MAIN */
+
+main{
+  max-width:1500px;
+  margin:auto;
+  padding:25px;
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:22px;
+}
+
+.panel-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+label{
+  display:block;
+  color:#d7d7dc;
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:7px;
+}
+
+input,
+select{
+  width:100%;
+  height:44px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  outline:none;
+  background:#101014;
+  color:var(--text);
+  padding:0 13px;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--orange);
+}
+
+input::placeholder{
+  color:#666671;
+}
+
+.field{
+  margin-bottom:15px;
+}
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:11px 16px;
+  font-weight:700;
+  color:white;
+  background:#292930;
+  transition:.15s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.1);
+}
+
+.btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.btn-orange{
+  background:var(--orange);
+  color:#111;
+}
+
+.btn-green{
+  background:var(--green);
+  color:#07140c;
+}
+
+.btn-red{
+  background:var(--red);
+  color:white;
+}
+
+.btn-blue{
+  background:var(--blue);
+  color:white;
+}
+
+.btn-small{
+  padding:8px 11px;
+  font-size:12px;
+}
+
+/* STATS */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:22px;
+}
+
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.stat-value{
+  font-size:27px;
+  font-weight:800;
+}
+
+/* CHART */
+
+.charts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.chart-box{
+  min-height:320px;
+}
+
+canvas{
+  width:100%;
+  height:250px;
+  display:block;
+}
+
+.top-deal{
+  background:var(--panel2);
+  border-radius:12px;
+  padding:15px;
+  color:#ddd;
+}
+
+/* FORM */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+.image-area{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:18px;
+  align-items:start;
+}
+
+.image-preview{
+  width:180px;
+  height:180px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:#0c0c0f;
+  object-fit:contain;
+  display:block;
+}
+
+.image-placeholder{
+  width:180px;
+  height:180px;
+  border-radius:14px;
+  border:1px dashed var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  text-align:center;
+  padding:15px;
+}
+
+.form-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:5px;
+}
+
+/* PRICE */
+
+.price-field{
+  position:relative;
+}
+
+.price-input{
+  padding-right:45px!important;
+  font-size:16px;
+  font-weight:700;
+}
+
+.price-symbol{
+  position:absolute;
+  right:14px;
+  top:34px;
+  color:var(--muted);
+  font-weight:700;
+  pointer-events:none;
+}
+
+.price-help{
+  margin-top:6px;
+  color:#777782;
+  font-size:11px;
+}
+
+.auto-price-status{
+  min-height:18px;
+  margin-top:7px;
+  font-size:12px;
+  font-weight:600;
+}
+
+.auto-ok{
+  color:var(--green);
+}
+
+.auto-warning{
+  color:var(--orange2);
+}
+
+.auto-error{
+  color:var(--red);
+}
+
+/* LINK */
+
+.link-status{
+  min-height:20px;
+  margin-top:7px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.link-valid{color:var(--green)}
+.link-invalid{color:var(--red)}
+.link-checking{color:var(--orange2)}
+
+/* FILTER */
+
+.filter-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.price-inputs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.price-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+#priceRangeText{
+  color:var(--orange);
+  font-size:12px;
+  font-weight:700;
+}
+
+/* RANGE */
+
+.range-wrap{
+  position:relative;
+  height:38px;
+  margin-top:10px;
+}
+
+.range-track{
+  position:absolute;
+  left:0;
+  right:0;
+  top:16px;
+  height:6px;
+  background:#34343e;
+  border-radius:10px;
+}
+
+.range-fill{
+  position:absolute;
+  top:16px;
+  height:6px;
+  background:var(--orange);
+  border-radius:10px;
+  pointer-events:none;
+}
+
+.range-wrap input[type=range]{
+  position:absolute;
+  left:0;
+  top:6px;
+  width:100%;
+  height:25px;
+  padding:0;
+  margin:0;
+  background:transparent;
+  border:0;
+  pointer-events:none;
+  appearance:none;
+  -webkit-appearance:none;
+  outline:none;
+}
+
+.range-wrap input[type=range]::-webkit-slider-runnable-track{
+  height:6px;
+  background:transparent;
+}
+
+.range-wrap input[type=range]::-webkit-slider-thumb{
+  appearance:none;
+  -webkit-appearance:none;
+  width:20px;
+  height:20px;
+  margin-top:-7px;
+  border-radius:50%;
+  background:var(--orange);
+  border:3px solid white;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  pointer-events:auto;
+  cursor:grab;
+}
+
+.range-wrap input[type=range]::-moz-range-thumb{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--orange);
+  border:3px solid white;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  pointer-events:auto;
+  cursor:grab;
+}
+
+.filter-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.result-count{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* DEALS */
+
+.deal-list{
+  display:grid;
+  gap:12px;
+}
+
+.deal-card{
+  display:grid;
+  grid-template-columns:85px 1fr auto;
+  gap:15px;
+  align-items:center;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+}
+
+.deal-image{
+  width:85px;
+  height:85px;
+  border-radius:10px;
+  object-fit:contain;
+  background:#0e0e11;
+}
+
+.deal-title{
+  font-size:15px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.deal-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.badge{
+  padding:4px 8px;
+  border-radius:20px;
+  background:#292930;
+}
+
+.badge-green{
+  background:rgba(40,199,111,.13);
+  color:var(--green);
+}
+
+.badge-orange{
+  background:rgba(255,122,0,.13);
+  color:var(--orange2);
+}
+
+.deal-prices{
+  margin-top:8px;
+}
+
+.old-price{
+  color:#777782;
+  text-decoration:line-through;
+  font-size:12px;
+}
+
+.new-price{
+  color:var(--orange);
+  font-weight:800;
+  font-size:17px;
+}
+
+.deal-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.empty{
+  padding:40px 20px;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--border);
+  border-radius:14px;
+}
+
+.loading{
+  text-align:center;
+  padding:30px;
+  color:var(--muted);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .charts{
+    grid-template-columns:1fr;
+  }
+
+  .filter-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:700px){
+
+  .header-inner{
+    padding:0 15px;
+    min-height:62px;
+  }
+
+  .header-logo{
+    font-size:18px;
+  }
+
+  main{
+    padding:15px;
+  }
+
+  .panel{
+    padding:15px;
+    border-radius:14px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stat{
+    padding:14px;
+  }
+
+  .stat-value{
+    font-size:22px;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .full{
+    grid-column:auto;
+  }
+
+  .image-area{
+    grid-template-columns:1fr;
+  }
+
+  .image-preview,
+  .image-placeholder{
+    width:150px;
+    height:150px;
+  }
+
+  .filter-grid{
+    grid-template-columns:1fr;
+  }
+
+  .deal-card{
+    grid-template-columns:70px 1fr;
+  }
+
+  .deal-image{
+    width:70px;
+    height:70px;
+  }
+
+  .deal-actions{
+    grid-column:1/-1;
+    justify-content:stretch;
+  }
+
+  .deal-actions .btn{
+    flex:1;
+  }
+
+  .price-inputs{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:450px){
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .header-actions .btn{
+    padding:8px 10px;
+    font-size:11px;
+  }
+
+  .login-box{
+    padding:22px;
+  }
+
+  .price-inputs{
+    grid-template-columns:1fr;
+  }
+
+  .deal-card{
+    grid-template-columns:60px 1fr;
+  }
+
+  .deal-image{
+    width:60px;
+    height:60px;
+  }
+
+  .deal-actions{
+    flex-direction:column;
+  }
+
+  .deal-actions .btn{
+    width:100%;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     LOGIN
+========================================================= -->
+
+<section id="loginPage">
+
+  <div class="login-box">
+
+    <div class="logo">
+      Fırsat<span>Radar</span>
+    </div>
+
+    <div class="subtitle">
+      Yönetim paneline giriş yap
+    </div>
+
+    <div class="field">
+
+      <label>E-posta</label>
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="admin@email.com"
+        autocomplete="email"
+      >
+
+    </div>
+
+    <div class="field">
+
+      <label>Şifre</label>
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="••••••••"
+        autocomplete="current-password"
+      >
+
+    </div>
+
+    <button
+      id="loginButton"
+      class="btn btn-orange"
+      style="width:100%;"
+    >
+      Giriş Yap
+    </button>
+
+    <div
+      id="loginMessage"
+      style="margin-top:12px;text-align:center;color:#ff4d4f;font-size:13px;"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     ADMIN
+========================================================= -->
+
+<section id="adminPage" class="hidden">
+
+<header>
+
+  <div class="header-inner">
+
+    <div class="header-logo">
+
+      Fırsat<span>Radar</span>
+
+      <span style="font-size:12px;color:#777;margin-left:5px;">
+        ADMIN
+      </span>
+
+    </div>
+
+    <div class="header-actions">
+
+      <button
+        id="refreshButton"
+        class="btn btn-small"
+      >
+        ↻ Yenile
+      </button>
+
+      <button
+        id="logoutButton"
+        class="btn btn-small btn-red"
+      >
+        Çıkış
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<main>
+
+<!-- =========================================================
+     STATS
+========================================================= -->
+
+<div class="stats">
+
+  <div class="stat">
+    <div class="stat-label">Bugünkü ziyaretçi</div>
+    <div id="todayVisitors" class="stat-value">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Dünkü ziyaretçi</div>
+    <div id="yesterdayVisitors" class="stat-value">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Son 7 gün</div>
+    <div id="weekVisitors" class="stat-value">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Bu ay</div>
+    <div id="monthVisitors" class="stat-value">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Toplam ziyaret</div>
+    <div id="totalVisits" class="stat-value">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Toplam tıklama</div>
+    <div id="totalClicks" class="stat-value">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Aktif fırsat</div>
+    <div id="activeDeals" class="stat-value">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">Son güncelleme</div>
+    <div
+      id="lastUpdate"
+      class="stat-value"
+      style="font-size:16px;"
+    >
+      -
+    </div>
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     CHARTS
+========================================================= -->
+
+<div class="charts">
+
+  <div class="panel chart-box">
+
+    <div class="panel-title">
+      Son 7 Gün Ziyaretleri
+    </div>
+
+    <canvas id="dailyChart"></canvas>
+
+  </div>
+
+  <div class="panel chart-box">
+
+    <div class="panel-title">
+      Bugün Saatlik Ziyaret
+    </div>
+
+    <canvas id="hourlyChart"></canvas>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOP DEAL
+========================================================= -->
+
+<div class="panel">
+
+  <div class="panel-title">
+    🔥 En Çok Tıklanan Fırsat
+  </div>
+
+  <div id="topDeal" class="top-deal">
+    Veri yükleniyor...
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     PRODUCT FORM
+========================================================= -->
+
+<div class="panel">
+
+  <div
+    id="formTitle"
+    class="panel-title"
+  >
+    ➕ Yeni Fırsat Ekle
+  </div>
+
+
+  <div class="form-grid">
+
+    <!-- LINK -->
+
+    <div class="field full">
+
+      <label>
+        Ürün / Affiliate Linki
+      </label>
+
+      <input
+        id="productLink"
+        type="url"
+        placeholder="https://www.amazon.com.tr/..."
+        autocomplete="off"
+      >
+
+      <div
+        id="linkStatus"
+        class="link-status"
+      ></div>
+
+    </div>
+
+
+    <!-- FETCH -->
+
+    <div class="field full">
+
+      <button
+        id="fetchProductButton"
+        class="btn btn-blue"
+        type="button"
+      >
+        🔎 Ürün Bilgilerini Çek
+      </button>
+
+      <span
+        id="fetchMessage"
+        style="color:#999;font-size:12px;margin-left:10px;"
+      ></span>
+
+    </div>
+
+
+    <!-- NAME -->
+
+    <div class="field">
+
+      <label>
+        Ürün Adı
+      </label>
+
+      <input
+        id="productName"
+        type="text"
+        placeholder="Ürün adı"
+      >
+
+    </div>
+
+
+    <!-- CATEGORY -->
+
+    <div class="field">
+
+      <label>
+        Kategori
+      </label>
+
+      <select
+id="productCategory"
+class="admin-select">
+
+<option value="Elektronik">Elektronik</option>
+<option value="Telefon">Telefon</option>
+<option value="Bilgisayar">Bilgisayar</option>
+<option value="Tablet">Tablet</option>
+<option value="Televizyon">Televizyon</option>
+<option value="Kulaklık">Kulaklık</option>
+<option value="Akıllı Saat">Akıllı Saat</option>
+<option value="Fotoğraf & Kamera">Fotoğraf & Kamera</option>
+<option value="Oyun">Oyun</option>
+<option value="Oyun Konsolu">Oyun Konsolu</option>
+<option value="Oyun Aksesuarları">Oyun Aksesuarları</option>
+<option value="Ev & Yaşam">Ev & Yaşam</option>
+<option value="Mutfak">Mutfak</option>
+<option value="Kişisel Bakım">Kişisel Bakım</option>
+<option value="Moda">Moda</option>
+<option value="Ayakkabı">Ayakkabı</option>
+<option value="Aksesuar">Aksesuar</option>
+<option value="Otomobil">Otomobil</option>
+<option value="Oto Aksesuar">Oto Aksesuar</option>
+<option value="Spor & Outdoor">Spor & Outdoor</option>
+<option value="Kitap">Kitap</option>
+<option value="Hobi">Hobi</option>
+<option value="Oyuncak">Oyuncak</option>
+<option value="Ofis & Kırtasiye">Ofis & Kırtasiye</option>
+<option value="Anne & Bebek">Anne & Bebek</option>
+<option value="Evcil Hayvan">Evcil Hayvan</option>
+<option value="Market">Market</option>
+<option value="Diğer">Diğer</option>
+
+</select>
+
+    </div>
+
+
+    <!-- OLD PRICE -->
+
+    <div class="field price-field">
+
+      <label>
+        Eski Fiyat
+      </label>
+
+      <input
+        id="oldPrice"
+        class="price-input"
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        placeholder="Örn. 24.999,90"
+      >
+
+      <span class="price-symbol">
+        ₺
+      </span>
+
+      <div class="price-help">
+        İstersen manuel girebilirsin.
+      </div>
+
+    </div>
+
+
+    <!-- NEW PRICE -->
+
+    <div class="field price-field">
+
+      <label>
+        Yeni Fiyat
+      </label>
+
+      <input
+        id="newPrice"
+        class="price-input"
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        placeholder="Örn. 19.999,90"
+      >
+
+      <span class="price-symbol">
+        ₺
+      </span>
+
+      <div
+        id="autoPriceStatus"
+        class="auto-price-status"
+      >
+        Fiyat otomatik gelmezse buraya manuel yazabilirsin.
+      </div>
+
+    </div>
+
+
+    <!-- IMAGE -->
+
+    <div class="field full">
+
+      <label>
+        Ürün Görseli
+      </label>
+
+      <div class="image-area">
+
+        <div id="imageContainer">
+
+          <div
+            id="imagePlaceholder"
+            class="image-placeholder"
+          >
+            Görsel yok
+          </div>
+
+          <img
+            id="imagePreview"
+            class="image-preview hidden"
+            alt="Ürün görseli"
+          >
+
+        </div>
+
+        <div>
+
+          <input
+            id="productImage"
+            type="file"
+            accept="image/*"
+          >
+
+          <div
+            style="margin-top:8px;color:#777;font-size:12px;"
+          >
+            İstersen otomatik gelen görseli
+            manuel olarak değiştirebilirsin.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="form-actions full">
+
+      <button
+        id="saveDealButton"
+        class="btn btn-green"
+        type="button"
+      >
+        💾 Fırsatı Kaydet
+      </button>
+
+      <button
+        id="cancelEditButton"
+        class="btn hidden"
+        type="button"
+      >
+        İptal
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     FILTERS
+========================================================= -->
+
+<div class="panel">
+
+  <div class="panel-title">
+    🔎 Fırsatları Filtrele
+  </div>
+
+  <div class="filter-grid">
+
+    <div>
+
+      <label>
+        Arama
+      </label>
+
+      <input
+        id="dealSearch"
+        type="search"
+        placeholder="Ürün adı ara..."
+      >
+
+    </div>
+
+
+    <div>
+
+      <label>
+        Kategori
+      </label>
+
+      <select id="filterCategory">
+
+        <option value="">
+          Tüm kategoriler
+        </option>
+
+        <option value="Elektronik">
+          Elektronik
+        </option>
+
+        <option value="Telefon">
+          Telefon
+        </option>
+
+        <option value="Bilgisayar">
+          Bilgisayar
+        </option>
+
+        <option value="Oyun">
+          Oyun
+        </option>
+
+        <option value="Ev">
+          Ev
+        </option>
+
+        <option value="Moda">
+          Moda
+        </option>
+
+        <option value="Otomobil">
+          Otomobil
+        </option>
+
+        <option value="Spor">
+          Spor
+        </option>
+
+        <option value="Diğer">
+          Diğer
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div>
+
+      <label>
+        Durum
+      </label>
+
+      <select id="filterStatus">
+
+        <option value="">
+          Tümü
+        </option>
+
+        <option value="active">
+          Aktif
+        </option>
+
+        <option value="inactive">
+          Pasif
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div>
+
+      <label>
+        Sıralama
+      </label>
+
+      <select id="filterSort">
+
+        <option value="newest">
+          En yeni
+        </option>
+
+        <option value="oldest">
+          En eski
+        </option>
+
+        <option value="price-low">
+          Fiyat düşük → yüksek
+        </option>
+
+        <option value="price-high">
+          Fiyat yüksek → düşük
+        </option>
+
+        <option value="clicks">
+          En çok tıklanan
+        </option>
+
+        <option value="name">
+          İsim A → Z
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <div class="field">
+
+    <div class="price-label">
+
+      <label style="margin:0;">
+        Fiyat aralığı
+      </label>
+
+      <span id="priceRangeText">
+        Tüm fiyatlar
+      </span>
+
+    </div>
+
+
+    <div class="price-inputs">
+
+      <input
+        id="minPriceInput"
+        type="number"
+        min="0"
+        max="500000"
+        placeholder="Min ₺"
+      >
+
+      <input
+        id="maxPriceInput"
+        type="number"
+        min="0"
+        max="500000"
+        placeholder="Max ₺"
+      >
+
+    </div>
+
+
+    <div class="range-wrap">
+
+      <div class="range-track"></div>
+
+      <div
+        id="rangeFill"
+        class="range-fill"
+      ></div>
+
+      <input
+        id="minPriceRange"
+        type="range"
+        min="0"
+        max="500000"
+        value="0"
+      >
+
+      <input
+        id="maxPriceRange"
+        type="range"
+        min="0"
+        max="500000"
+        value="500000"
+      >
+
+    </div>
+
+  </div>
+
+
+  <div class="filter-bottom">
+
+    <div
+      id="resultCount"
+      class="result-count"
+    >
+      0 sonuç
+    </div>
+
+    <button
+      id="clearFilters"
+      class="btn btn-small"
+    >
+      Filtreleri Temizle
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     DEAL LIST
+========================================================= -->
+
+<div class="panel">
+
+  <div class="panel-title">
+    📦 Fırsatlar
+  </div>
+
+  <div
+    id="adminDealsList"
+    class="deal-list"
+  >
+    <div class="loading">
+      Fırsatlar yükleniyor...
+    </div>
+  </div>
+
+</div>
+
+</main>
+
+</section>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+  "https://plamxtngolhofgiwntij.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_DcVjC7SXJ5vHtIH57bkMiQ_wyak6kSt";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let allDeals = [];
+
+let editingDealId = null;
+
+let editingImageUrl = null;
+
+let editingOldImageUrl = null;
+
+let selectedImageFile = null;
+
+
+/* =========================================================
+   SHORTCUT
+========================================================= */
+
+const $ = id =>
+  document.getElementById(id);
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+$("loginButton").addEventListener(
+  "click",
+  login
+);
+
+$("loginPassword").addEventListener(
+  "keydown",
+  e => {
+
+    if(e.key === "Enter"){
+      login();
+    }
+
+  }
+);
+
+
+async function login(){
+
+  const email =
+    $("loginEmail").value.trim();
+
+  const password =
+    $("loginPassword").value;
+
+  $("loginMessage").textContent = "";
+
+  if(!email || !password){
+
+    $("loginMessage").textContent =
+      "E-posta ve şifre gerekli.";
+
+    return;
+  }
+
+  $("loginButton").disabled = true;
+
+  $("loginButton").textContent =
+    "Giriş yapılıyor...";
+
+
+  const {error} =
+    await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+
+  $("loginButton").disabled = false;
+
+  $("loginButton").textContent =
+    "Giriş Yap";
+
+
+  if(error){
+
+    $("loginMessage").textContent =
+      "Giriş başarısız: " +
+      error.message;
+
+    return;
+  }
+
+  showAdmin();
+
+}
+
+
+$("logoutButton").addEventListener(
+  "click",
+  async () => {
+
+    await supabaseClient.auth.signOut();
+
+    $("adminPage")
+      .classList
+      .add("hidden");
+
+    $("loginPage")
+      .classList
+      .remove("hidden");
+
+  }
+);
+
+
+async function checkSession(){
+
+  const {data} =
+    await supabaseClient.auth.getSession();
+
+  if(data.session){
+
+    showAdmin();
+
+  }
+
+}
+
+
+async function showAdmin(){
+
+  $("loginPage")
+    .classList
+    .add("hidden");
+
+  $("adminPage")
+    .classList
+    .remove("hidden");
+
+  await loadEverything();
+
+}
+
+
+/* =========================================================
+   LOAD EVERYTHING
+========================================================= */
+
+async function loadEverything(){
+
+  $("lastUpdate").textContent =
+    new Date().toLocaleTimeString("tr-TR");
+
+  await loadDeals();
+
+  await loadAnalytics();
+
+}
+
+
+$("refreshButton").addEventListener(
+  "click",
+  loadEverything
+);
+
+
+/* =========================================================
+   LINK VALIDATION
+========================================================= */
+
+function validateAffiliateUrl(value){
+
+  const raw =
+    String(value || "").trim();
+
+  if(!raw){
+
+    return {
+      valid:false,
+      message:"❌ Link boş bırakılamaz."
+    };
+
+  }
+
+
+  let url;
+
+  try{
+
+    url = new URL(raw);
+
+  }catch{
+
+    return {
+      valid:false,
+      message:"❌ Geçerli bir ürün linki gir."
+    };
+
+  }
+
+
+  if(
+    url.protocol !== "http:" &&
+    url.protocol !== "https:"
+  ){
+
+    return {
+      valid:false,
+      message:"❌ Sadece http:// veya https:// kullanılabilir."
+    };
+
+  }
+
+
+  if(!url.hostname){
+
+    return {
+      valid:false,
+      message:"❌ Geçerli bir internet adresi gir."
+    };
+
+  }
+
+
+  if(
+    url.hostname === "localhost" ||
+    url.hostname === "127.0.0.1"
+  ){
+
+    return {
+      valid:false,
+      message:"❌ Yerel bilgisayar adresi kullanılamaz."
+    };
+
+  }
+
+
+  return {
+    valid:true,
+    message:"✅ Link geçerli.",
+    url:url.href
+  };
+
+}
+
+
+function updateLinkStatus(){
+
+  const input =
+    $("productLink");
+
+  const status =
+    $("linkStatus");
+
+  const result =
+    validateAffiliateUrl(
+      input.value
+    );
+
+
+  status.className =
+    "link-status";
+
+
+  if(!input.value.trim()){
+
+    status.textContent = "";
+
+    return false;
+
+  }
+
+
+  if(result.valid){
+
+    status.classList.add(
+      "link-valid"
+    );
+
+    status.textContent =
+      result.message;
+
+    return true;
+
+  }
+
+
+  status.classList.add(
+    "link-invalid"
+  );
+
+  status.textContent =
+    result.message;
+
+  return false;
+
+}
+
+
+$("productLink").addEventListener(
+  "input",
+  updateLinkStatus
+);
+
+$("productLink").addEventListener(
+  "blur",
+  updateLinkStatus
+);
+
+
+/* =========================================================
+   PRICE PARSER
+========================================================= */
+
+/*
+  Şunların hepsini destekler:
+
+  19999
+  19999.90
+  19999,90
+  19.999,90
+  19,999.90
+  ₺19.999,90
+  19 999,90
+*/
+
+function parsePrice(value){
+
+  if(value === null || value === undefined){
+    return 0;
+  }
+
+
+  if(typeof value === "number"){
+
+    return Number.isFinite(value)
+      ? value
+      : 0;
+
+  }
+
+
+  let s =
+    String(value)
+      .trim()
+      .replace(/\s/g,"")
+      .replace(/₺/gi,"")
+      .replace(/TL/gi,"")
+      .replace(/TRY/gi,"")
+      .replace(/[^\d,.-]/g,"");
+
+
+  if(!s){
+    return 0;
+  }
+
+
+  const commaCount =
+    (s.match(/,/g) || []).length;
+
+  const dotCount =
+    (s.match(/\./g) || []).length;
+
+
+  /*
+    Hem virgül hem nokta varsa
+    son görülen işareti ondalık kabul ediyoruz.
+  */
+
+  if(
+    commaCount > 0 &&
+    dotCount > 0
+  ){
+
+    if(
+      s.lastIndexOf(",") >
+      s.lastIndexOf(".")
+    ){
+
+      s =
+        s
+          .replace(/\./g,"")
+          .replace(",", ".");
+
+    }else{
+
+      s =
+        s.replace(/,/g,"");
+
+    }
+
+  }
+
+  /*
+    Sadece virgül varsa
+  */
+
+  else if(commaCount > 0){
+
+    const parts =
+      s.split(",");
+
+    const last =
+      parts[parts.length - 1];
+
+
+    if(
+      parts.length === 2 &&
+      last.length <= 2
+    ){
+
+      s =
+        parts[0] +
+        "." +
+        last;
+
+    }else{
+
+      s =
+        s.replace(/,/g,"");
+
+    }
+
+  }
+
+  /*
+    Sadece nokta varsa
+  */
+
+  else if(dotCount > 0){
+
+    const parts =
+      s.split(".");
+
+    const last =
+      parts[parts.length - 1];
+
+
+    /*
+      19.999 -> 19999
+      19.99  -> 19.99
+    */
+
+    if(
+      parts.length === 2 &&
+      last.length <= 2
+    ){
+
+      /* Ondalık */
+
+    }else{
+
+      s =
+        s.replace(/\./g,"");
+
+    }
+
+  }
+
+
+  const number =
+    Number(s);
+
+
+  if(
+    !Number.isFinite(number) ||
+    number < 0
+  ){
+
+    return 0;
+
+  }
+
+
+  return number;
+
+}
+
+
+function formatPrice(value){
+
+  const number =
+    parsePrice(value);
+
+  if(!number){
+    return "₺0";
+  }
+
+  return number.toLocaleString(
+    "tr-TR",
+    {
+      style:"currency",
+      currency:"TRY",
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+function getDealPrice(deal){
+
+  return parsePrice(
+    deal.new_price
+  );
+
+}
+
+
+/* =========================================================
+   MANUAL PRICE INPUT
+========================================================= */
+
+function normalizePriceInput(input){
+
+  let value =
+    input.value;
+
+  if(!value){
+    return;
+  }
+
+
+  const parsed =
+    parsePrice(value);
+
+
+  if(parsed > 0){
+
+    input.dataset.numericValue =
+      String(parsed);
+
+  }
+
+}
+
+
+/*
+  Kullanıcı yazarken formatı zorlamıyoruz.
+  Böylece 19.999,90 gibi değerleri rahatça yazabiliyor.
+*/
+
+$("oldPrice").addEventListener(
+  "blur",
+  () => {
+
+    normalizePriceInput(
+      $("oldPrice")
+    );
+
+  }
+);
+
+
+$("newPrice").addEventListener(
+  "blur",
+  () => {
+
+    normalizePriceInput(
+      $("newPrice")
+    );
+
+  }
+);
+
+
+/* =========================================================
+   PRODUCT FETCH
+========================================================= */
+
+$("fetchProductButton")
+  .addEventListener(
+    "click",
+    fetchProduct
+  );
+
+
+async function fetchProduct(){
+
+  const link =
+    $("productLink")
+      .value
+      .trim();
+
+
+  const validation =
+    validateAffiliateUrl(link);
+
+
+  if(!validation.valid){
+
+    updateLinkStatus();
+
+    alert(validation.message);
+
+    return;
+
+  }
+
+
+  $("productLink").value =
+    validation.url;
+
+  updateLinkStatus();
+
+
+  const button =
+    $("fetchProductButton");
+
+  const message =
+    $("fetchMessage");
+
+  const priceStatus =
+    $("autoPriceStatus");
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ Bilgiler çekiliyor...";
+
+  message.textContent = "";
+
+  priceStatus.className =
+    "auto-price-status";
+
+  priceStatus.textContent =
+    "Fiyat kontrol ediliyor...";
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.functions.invoke(
+        "super-service",
+        {
+          body:{
+            url:validation.url
+          }
+        }
+      );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    if(!data){
+      throw new Error(
+        "Sunucudan veri gelmedi."
+      );
+    }
+
+
+    console.log(
+      "super-service sonucu:",
+      data
+    );
+
+
+    /* =====================================================
+       ÜRÜN ADI
+    ===================================================== */
+
+    const title =
+      data.title ||
+      data.name ||
+      data.product_title ||
+      data.productName ||
+      "";
+
+
+    if(title){
+
+      $("productName").value =
+        title;
+
+    }
+
+
+    /* =====================================================
+       GÖRSEL
+    ===================================================== */
+
+    const imageUrl =
+      data.image_url ||
+      data.image ||
+      data.product_image ||
+      data.thumbnail ||
+      "";
+
+
+    if(imageUrl){
+
+      editingImageUrl =
+        imageUrl;
+
+      showImage(
+        imageUrl
+      );
+
+    }
+
+
+    /* =====================================================
+       FİYAT
+    ===================================================== */
+
+    const automaticPrice =
+      findPriceInResponse(
+        data
+      );
+
+
+    if(automaticPrice > 0){
+
+      $("newPrice").value =
+        formatInputPrice(
+          automaticPrice
+        );
+
+      $("newPrice")
+        .dataset.numericValue =
+        String(automaticPrice);
+
+
+      priceStatus.className =
+        "auto-price-status auto-ok";
+
+      priceStatus.textContent =
+        "✓ Fiyat otomatik olarak alındı.";
+
+    }else{
+
+      /*
+        Burada mevcut manuel fiyat varsa
+        asla silmiyoruz.
+      */
+
+      priceStatus.className =
+        "auto-price-status auto-warning";
+
+      priceStatus.textContent =
+        "⚠ Otomatik fiyat bulunamadı. Yeni fiyatı manuel girebilirsin.";
+
+    }
+
+
+    /*
+      Ürün adı veya görsel gelmişse başarılı kabul ediyoruz.
+    */
+
+    if(title || imageUrl){
+
+      message.style.color =
+        "#28c76f";
+
+      message.textContent =
+        "✓ Ürün bilgileri alındı.";
+
+    }else{
+
+      message.style.color =
+        "#ff9a3d";
+
+      message.textContent =
+        "Ürün bilgileri sınırlı geldi.";
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Ürün çekme hatası:",
+      error
+    );
+
+
+    message.style.color =
+      "#ff4d4f";
+
+    message.textContent =
+      "Ürün bilgileri alınamadı.";
+
+
+    priceStatus.className =
+      "auto-price-status auto-warning";
+
+    priceStatus.textContent =
+      "⚠ Fiyatı manuel girebilirsin.";
+
+
+    alert(
+      "Ürün bilgileri alınamadı.\n\n" +
+      (
+        error.message ||
+        "Bilinmeyen hata."
+      )
+    );
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "🔎 Ürün Bilgilerini Çek";
+
+  }
+
+}
+
+
+/* =========================================================
+   FLEXIBLE PRICE FINDER
+========================================================= */
+
+/*
+  super-service farklı isimde fiyat döndürürse
+  yine yakalamaya çalışıyoruz.
+*/
+
+function findPriceInResponse(data){
+
+  if(!data){
+    return 0;
+  }
+
+
+  const directKeys = [
+
+    "price",
+    "current_price",
+    "sale_price",
+    "discount_price",
+    "new_price",
+    "product_price",
+    "currentPrice",
+    "salePrice",
+    "discountPrice"
+
+  ];
+
+
+  for(const key of directKeys){
+
+    if(
+      data[key] !== undefined &&
+      data[key] !== null
+    ){
+
+      const price =
+        parsePrice(
+          data[key]
+        );
+
+
+      if(price > 0){
+        return price;
+      }
+
+    }
+
+  }
+
+
+  /*
+    price objesi varsa:
+    { price: { value: 19999 } }
+  */
+
+  if(
+    typeof data.price === "object" &&
+    data.price !== null
+  ){
+
+    const nestedKeys = [
+      "value",
+      "amount",
+      "current",
+      "sale",
+      "price"
+    ];
+
+
+    for(const key of nestedKeys){
+
+      const price =
+        parsePrice(
+          data.price[key]
+        );
+
+
+      if(price > 0){
+        return price;
+      }
+
+    }
+
+  }
+
+
+  /*
+    Birkaç yaygın nested alanı da kontrol ediyoruz.
+  */
+
+  const nestedObjects = [
+    data.product,
+    data.offer,
+    data.offers,
+    data.data,
+    data.result
+  ];
+
+
+  for(const object of nestedObjects){
+
+    if(
+      !object ||
+      typeof object !== "object"
+    ){
+      continue;
+    }
+
+
+    for(const key of directKeys){
+
+      if(
+        object[key] !== undefined &&
+        object[key] !== null
+      ){
+
+        const price =
+          parsePrice(
+            object[key]
+          );
+
+
+        if(price > 0){
+          return price;
+        }
+
+      }
+
+    }
+
+  }
+
+
+  return 0;
+
+}
+
+
+/* =========================================================
+   INPUT PRICE FORMAT
+========================================================= */
+
+function formatInputPrice(value){
+
+  const number =
+    parsePrice(value);
+
+
+  if(!number){
+    return "";
+  }
+
+
+  return number.toLocaleString(
+    "tr-TR",
+    {
+      minimumFractionDigits:
+        number % 1 !== 0
+          ? 2
+          : 0,
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+$("productImage")
+  .addEventListener(
+    "change",
+    event => {
+
+      selectedImageFile =
+        event.target.files[0] ||
+        null;
+
+
+      if(selectedImageFile){
+
+        const url =
+          URL.createObjectURL(
+            selectedImageFile
+          );
+
+        showImage(url);
+
+      }
+
+    }
+  );
+
+
+function showImage(url){
+
+  const image =
+    $("imagePreview");
+
+  const placeholder =
+    $("imagePlaceholder");
+
+
+  if(!url){
+
+    image.classList.add(
+      "hidden"
+    );
+
+    placeholder.classList.remove(
+      "hidden"
+    );
+
+    image.removeAttribute(
+      "src"
+    );
+
+    return;
+
+  }
+
+
+  image.src =
+    url;
+
+  image.classList.remove(
+    "hidden"
+  );
+
+  placeholder.classList.add(
+    "hidden"
+  );
+
+}
+
+
+async function uploadImage(file){
+
+  if(!file){
+    return null;
+  }
+
+
+  const extension =
+    (
+      file.name
+        .split(".")
+        .pop() ||
+      "jpg"
+    ).toLowerCase();
+
+
+  const fileName =
+    `${crypto.randomUUID()}.${extension}`;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .storage
+      .from("product-images")
+      .upload(
+        fileName,
+        file,
+        {
+          upsert:false
+        }
+      );
+
+
+  if(error){
+    throw error;
+  }
+
+
+  const {
+    data
+  } =
+    supabaseClient
+      .storage
+      .from("product-images")
+      .getPublicUrl(
+        fileName
+      );
+
+
+  return data.publicUrl;
+
+}
+
+
+function getStoragePathFromPublicUrl(
+  publicUrl
+){
+
+  if(!publicUrl){
+    return null;
+  }
+
+
+  try{
+
+    const marker =
+      "/storage/v1/object/public/product-images/";
+
+
+    const index =
+      publicUrl.indexOf(
+        marker
+      );
+
+
+    if(index === -1){
+      return null;
+    }
+
+
+    return decodeURIComponent(
+      publicUrl.slice(
+        index + marker.length
+      )
+    );
+
+  }catch{
+
+    return null;
+
+  }
+
+}
+
+
+async function deleteStorageImage(
+  publicUrl
+){
+
+  const path =
+    getStoragePathFromPublicUrl(
+      publicUrl
+    );
+
+
+  if(!path){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .storage
+      .from("product-images")
+      .remove([
+        path
+      ]);
+
+
+  if(error){
+
+    console.warn(
+      "Görsel silinemedi:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SAVE DEAL
+========================================================= */
+
+$("saveDealButton")
+  .addEventListener(
+    "click",
+    saveDeal
+  );
+
+
+async function saveDeal(){
+
+  const link =
+    $("productLink")
+      .value
+      .trim();
+
+
+  const validation =
+    validateAffiliateUrl(link);
+
+
+  if(!validation.valid){
+
+    updateLinkStatus();
+
+    alert(
+      validation.message
+    );
+
+    return;
+
+  }
+
+
+  const title =
+    $("productName")
+      .value
+      .trim();
+
+
+  const category =
+    $("productCategory")
+      .value
+      .trim();
+
+
+  const oldPriceText =
+    $("oldPrice")
+      .value
+      .trim();
+
+
+  const newPriceText =
+    $("newPrice")
+      .value
+      .trim();
+
+
+  /* =====================================================
+     PRICE CONVERSION
+  ===================================================== */
+
+  const oldPriceNumber =
+    oldPriceText
+      ? parsePrice(oldPriceText)
+      : null;
+
+
+  const newPriceNumber =
+    newPriceText
+      ? parsePrice(newPriceText)
+      : 0;
+
+
+  if(!title){
+
+    alert(
+      "Ürün adı gerekli."
+    );
+
+    $("productName").focus();
+
+    return;
+
+  }
+
+
+  if(
+    !newPriceText ||
+    newPriceNumber <= 0
+  ){
+
+    alert(
+      "Yeni fiyat gerekli.\n\n" +
+      "Otomatik fiyat gelmediyse Yeni Fiyat alanına manuel olarak yazabilirsin.\n\n" +
+      "Örnek: 19999,90"
+    );
+
+    $("newPrice").focus();
+
+    return;
+
+  }
+
+
+  /*
+    Kullanıcıya ne kaydedeceğimizi göster.
+  */
+
+  console.log(
+    "Kaydedilecek yeni fiyat:",
+    newPriceNumber
+  );
+
+
+  let imageUrl =
+    editingImageUrl;
+
+
+  const saveButton =
+    $("saveDealButton");
+
+
+  saveButton.disabled = true;
+
+  saveButton.textContent =
+    "⏳ Kaydediliyor...";
+
+
+  try{
+
+    /* =====================================================
+       IMAGE UPLOAD
+    ===================================================== */
+
+    if(selectedImageFile){
+
+      const uploaded =
+        await uploadImage(
+          selectedImageFile
+        );
+
+
+      if(uploaded){
+
+        imageUrl =
+          uploaded;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       PAYLOAD
+    ===================================================== */
+
+    const payload = {
+
+      title:title,
+
+      category:
+        category || null,
+
+      /*
+        Eski fiyat boşsa null.
+        Doluysa gerçek NUMBER.
+      */
+
+      old_price:
+        oldPriceNumber &&
+        oldPriceNumber > 0
+          ? oldPriceNumber
+          : null,
+
+      /*
+        En önemli kısım:
+        manuel fiyat kesin olarak NUMBER olarak gidiyor.
+      */
+
+      new_price:
+        newPriceNumber,
+
+      image_url:
+        imageUrl || null,
+
+      affiliate_url:
+        validation.url
+
+    };
+
+
+    console.log(
+      "Supabase payload:",
+      payload
+    );
+
+
+    let error = null;
+
+
+    /* =====================================================
+       UPDATE
+    ===================================================== */
+
+    if(editingDealId){
+
+      const result =
+        await supabaseClient
+          .from("deals")
+          .update(payload)
+          .eq(
+            "id",
+            editingDealId
+          );
+
+
+      error =
+        result.error;
+
+
+      if(
+        !error &&
+        editingOldImageUrl &&
+        imageUrl &&
+        editingOldImageUrl !== imageUrl
+      ){
+
+        await deleteStorageImage(
+          editingOldImageUrl
+        );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       INSERT
+    ===================================================== */
+
+    else{
+
+      const result =
+        await supabaseClient
+          .from("deals")
+          .insert({
+            ...payload,
+            published:true
+          });
+
+
+      error =
+        result.error;
+
+    }
+
+
+    if(error){
+      throw error;
+    }
+
+
+    alert(
+      editingDealId
+        ? "Fırsat güncellendi."
+        : "Fırsat başarıyla eklendi."
+    );
+
+
+    resetForm();
+
+    await loadEverything();
+
+
+  }catch(error){
+
+    console.error(
+      "Kaydetme hatası:",
+      error
+    );
+
+
+    let message =
+      error.message ||
+      "Bilinmeyen hata.";
+
+
+    /*
+      Hataları daha anlaşılır göster.
+    */
+
+    if(
+      message
+        .toLowerCase()
+        .includes("row-level security")
+    ){
+
+      message +=
+        "\n\nSupabase RLS yetkisi nedeniyle kayıt engelleniyor.";
+
+    }
+
+
+    if(
+      message
+        .toLowerCase()
+        .includes("numeric")
+    ){
+
+      message +=
+        "\n\nFiyat alanının veritabanı tipi numeric olmalı.";
+
+    }
+
+
+    if(
+      message
+        .toLowerCase()
+        .includes("not-null")
+    ){
+
+      message +=
+        "\n\nVeritabanında zorunlu bir alan boş kalıyor.";
+
+    }
+
+
+    alert(
+      "Kaydetme başarısız:\n\n" +
+      message
+    );
+
+
+  }finally{
+
+    saveButton.disabled = false;
+
+    saveButton.textContent =
+      editingDealId
+        ? "💾 Değişiklikleri Kaydet"
+        : "💾 Fırsatı Kaydet";
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD DEALS
+========================================================= */
+
+async function loadDeals(){
+
+  const list =
+    $("adminDealsList");
+
+
+  list.innerHTML =
+    '<div class="loading">Fırsatlar yükleniyor...</div>';
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("deals")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+    list.innerHTML =
+      `<div class="empty">
+        Fırsatlar yüklenemedi.<br>
+        ${escapeHtml(error.message)}
+      </div>`;
+
+    return;
+
+  }
+
+
+  allDeals =
+    data || [];
+
+
+  updatePriceRange();
+
+  applyFilters();
+
+}
+
+
+/* =========================================================
+   PRICE RANGE
+========================================================= */
+
+function updatePriceRange(){
+
+  $("minPriceRange").value =
+    0;
+
+  $("maxPriceRange").value =
+    500000;
+
+  $("minPriceInput").value =
+    "";
+
+  $("maxPriceInput").value =
+    "";
+
+  updatePriceText();
+
+  updateRangeFill();
+
+}
+
+
+function updateRangeFill(){
+
+  const minRange =
+    $("minPriceRange");
+
+  const maxRange =
+    $("maxPriceRange");
+
+  const fill =
+    $("rangeFill");
+
+
+  const min =
+    Number(
+      minRange.value
+    );
+
+  const max =
+    Number(
+      maxRange.value
+    );
+
+
+  const total =
+    500000;
+
+
+  const left =
+    (min / total) * 100;
+
+  const right =
+    (max / total) * 100;
+
+
+  fill.style.left =
+    `${left}%`;
+
+  fill.style.width =
+    `${Math.max(
+      0,
+      right-left
+    )}%`;
+
+}
+
+
+function updatePriceText(){
+
+  const min =
+    $("minPriceInput").value;
+
+  const max =
+    $("maxPriceInput").value;
+
+
+  if(!min && !max){
+
+    $("priceRangeText").textContent =
+      "Tüm fiyatlar";
+
+    updateRangeFill();
+
+    return;
+
+  }
+
+
+  const minText =
+    min
+      ? formatPrice(min)
+      : "₺0";
+
+
+  const maxText =
+    max
+      ? formatPrice(max)
+      : "₺500.000";
+
+
+  $("priceRangeText").textContent =
+    `${minText} – ${maxText}`;
+
+  updateRangeFill();
+
+}
+
+
+/* =========================================================
+   PRICE FILTER INPUTS
+========================================================= */
+
+$("minPriceInput")
+  .addEventListener(
+    "input",
+    () => {
+
+      if(
+        $("minPriceInput").value === ""
+      ){
+
+        $("minPriceRange").value =
+          0;
+
+        updatePriceText();
+
+        applyFilters();
+
+        return;
+
+      }
+
+
+      let value =
+        Number(
+          $("minPriceInput").value
+        );
+
+
+      if(!Number.isFinite(value)){
+        return;
+      }
+
+
+      value =
+        Math.max(
+          0,
+          Math.min(
+            500000,
+            value
+          )
+        );
+
+
+      const max =
+        $("maxPriceInput").value;
+
+
+      if(
+        max !== "" &&
+        value > Number(max)
+      ){
+
+        value =
+          Number(max);
+
+      }
+
+
+      $("minPriceInput").value =
+        value;
+
+      $("minPriceRange").value =
+        value;
+
+      updatePriceText();
+
+      applyFilters();
+
+    }
+  );
+
+
+$("maxPriceInput")
+  .addEventListener(
+    "input",
+    () => {
+
+      if(
+        $("maxPriceInput").value === ""
+      ){
+
+        $("maxPriceRange").value =
+          500000;
+
+        updatePriceText();
+
+        applyFilters();
+
+        return;
+
+      }
+
+
+      let value =
+        Number(
+          $("maxPriceInput").value
+        );
+
+
+      if(!Number.isFinite(value)){
+        return;
+      }
+
+
+      value =
+        Math.max(
+          0,
+          Math.min(
+            500000,
+            value
+          )
+        );
+
+
+      const min =
+        $("minPriceInput").value;
+
+
+      if(
+        min !== "" &&
+        value < Number(min)
+      ){
+
+        value =
+          Number(min);
+
+      }
+
+
+      $("maxPriceInput").value =
+        value;
+
+      $("maxPriceRange").value =
+        value;
+
+      updatePriceText();
+
+      applyFilters();
+
+    }
+  );
+
+
+$("minPriceRange")
+  .addEventListener(
+    "input",
+    () => {
+
+      let value =
+        Number(
+          $("minPriceRange").value
+        );
+
+      const max =
+        Number(
+          $("maxPriceRange").value
+        );
+
+
+      if(value > max){
+
+        value =
+          max;
+
+        $("minPriceRange").value =
+          value;
+
+      }
+
+
+      $("minPriceInput").value =
+        value;
+
+      updatePriceText();
+
+      applyFilters();
+
+    }
+  );
+
+
+$("maxPriceRange")
+  .addEventListener(
+    "input",
+    () => {
+
+      let value =
+        Number(
+          $("maxPriceRange").value
+        );
+
+      const min =
+        Number(
+          $("minPriceRange").value
+        );
+
+
+      if(value < min){
+
+        value =
+          min;
+
+        $("maxPriceRange").value =
+          value;
+
+      }
+
+
+      $("maxPriceInput").value =
+        value;
+
+      updatePriceText();
+
+      applyFilters();
+
+    }
+  );
+
+
+/* =========================================================
+   FILTER EVENTS
+========================================================= */
+
+$("dealSearch")
+  .addEventListener(
+    "input",
+    applyFilters
+  );
+
+$("filterCategory")
+  .addEventListener(
+    "change",
+    applyFilters
+  );
+
+$("filterStatus")
+  .addEventListener(
+    "change",
+    applyFilters
+  );
+
+$("filterSort")
+  .addEventListener(
+    "change",
+    applyFilters
+  );
+
+
+$("clearFilters")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("dealSearch").value =
+        "";
+
+      $("filterCategory").value =
+        "";
+
+      $("filterStatus").value =
+        "";
+
+      $("filterSort").value =
+        "newest";
+
+      $("minPriceInput").value =
+        "";
+
+      $("maxPriceInput").value =
+        "";
+
+      $("minPriceRange").value =
+        0;
+
+      $("maxPriceRange").value =
+        500000;
+
+      updatePriceText();
+
+      applyFilters();
+
+    }
+  );
+
+
+/* =========================================================
+   APPLY FILTERS
+========================================================= */
+
+function applyFilters(){
+
+  const search =
+    $("dealSearch")
+      .value
+      .trim()
+      .toLocaleLowerCase(
+        "tr-TR"
+      );
+
+
+  const category =
+    $("filterCategory").value;
+
+
+  const status =
+    $("filterStatus").value;
+
+
+  const sort =
+    $("filterSort").value;
+
+
+  const minPrice =
+    $("minPriceInput").value !== ""
+      ? Number(
+          $("minPriceInput").value
+        )
+      : null;
+
+
+  const maxPrice =
+    $("maxPriceInput").value !== ""
+      ? Number(
+          $("maxPriceInput").value
+        )
+      : null;
+
+
+  let filtered =
+    allDeals.filter(
+      deal => {
+
+        const title =
+          String(
+            deal.title || ""
+          )
+          .toLocaleLowerCase(
+            "tr-TR"
+          );
+
+
+        if(
+          search &&
+          !title.includes(search)
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          category &&
+          deal.category !== category
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          status === "active" &&
+          !deal.published
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          status === "inactive" &&
+          deal.published
+        ){
+
+          return false;
+
+        }
+
+
+        const price =
+          getDealPrice(deal);
+
+
+        if(
+          minPrice !== null &&
+          price < minPrice
+        ){
+
+          return false;
+
+        }
+
+
+        if(
+          maxPrice !== null &&
+          price > maxPrice
+        ){
+
+          return false;
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  /* SORT */
+
+  if(sort === "oldest"){
+
+    filtered.sort(
+      (a,b) =>
+        new Date(a.created_at) -
+        new Date(b.created_at)
+    );
+
+  }
+
+  else if(sort === "price-low"){
+
+    filtered.sort(
+      (a,b) =>
+        getDealPrice(a) -
+        getDealPrice(b)
+    );
+
+  }
+
+  else if(sort === "price-high"){
+
+    filtered.sort(
+      (a,b) =>
+        getDealPrice(b) -
+        getDealPrice(a)
+    );
+
+  }
+
+  else if(sort === "clicks"){
+
+    filtered.sort(
+      (a,b) =>
+        Number(b.clicks || 0) -
+        Number(a.clicks || 0)
+    );
+
+  }
+
+  else if(sort === "name"){
+
+    filtered.sort(
+      (a,b) =>
+        String(a.title || "")
+          .localeCompare(
+            String(b.title || ""),
+            "tr"
+          )
+    );
+
+  }
+
+  else{
+
+    filtered.sort(
+      (a,b) =>
+        new Date(b.created_at) -
+        new Date(a.created_at)
+    );
+
+  }
+
+
+  $("resultCount").textContent =
+    `${filtered.length} sonuç`;
+
+
+  renderDeals(filtered);
+
+}
+
+
+/* =========================================================
+   RENDER DEALS
+========================================================= */
+
+function renderDeals(deals){
+
+  const list =
+    $("adminDealsList");
+
+
+  if(!deals.length){
+
+    list.innerHTML =
+      `<div class="empty">
+        Bu filtrelere uygun fırsat bulunamadı.
+      </div>`;
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    deals
+      .map(
+        deal => {
+
+          const image =
+            deal.image_url || "";
+
+
+          const title =
+            escapeHtml(
+              deal.title ||
+              "İsimsiz ürün"
+            );
+
+
+          const category =
+            escapeHtml(
+              deal.category ||
+              "Kategori yok"
+            );
+
+
+          const price =
+            getDealPrice(deal);
+
+
+          const oldPrice =
+            deal.old_price
+              ? formatPrice(
+                  deal.old_price
+                )
+              : "";
+
+
+          const clicks =
+            Number(
+              deal.clicks || 0
+            );
+
+
+          const published =
+            !!deal.published;
+
+
+          return `
+
+            <div class="deal-card">
+
+              ${
+                image
+                  ? `
+                    <img
+                      class="deal-image"
+                      src="${escapeHtml(image)}"
+                      alt=""
+                      onerror="this.style.opacity='.25'"
+                    >
+                  `
+                  : `
+                    <div
+                      class="deal-image"
+                      style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        color:#555;
+                        font-size:11px;
+                      "
+                    >
+                      Görsel yok
+                    </div>
+                  `
+              }
+
+
+              <div>
+
+                <div class="deal-title">
+                  ${title}
+                </div>
+
+
+                <div class="deal-meta">
+
+                  <span class="badge">
+                    ${category}
+                  </span>
+
+                  <span
+                    class="badge ${
+                      published
+                        ? "badge-green"
+                        : ""
+                    }"
+                  >
+                    ${
+                      published
+                        ? "Aktif"
+                        : "Pasif"
+                    }
+                  </span>
+
+                  <span class="badge">
+                    👆 ${clicks} tıklama
+                  </span>
+
+                </div>
+
+
+                <div class="deal-prices">
+
+                  ${
+                    oldPrice
+                      ? `
+                        <div class="old-price">
+                          ${oldPrice}
+                        </div>
+                      `
+                      : ""
+                  }
+
+                  <div class="new-price">
+
+                    ${
+                      price
+                        ? formatPrice(price)
+                        : "Fiyat yok"
+                    }
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="deal-actions">
+
+                <button
+                  class="btn btn-small btn-blue"
+                  onclick="editDeal('${deal.id}')"
+                >
+                  Düzenle
+                </button>
+
+                <button
+                  class="btn btn-small btn-red"
+                  onclick="deleteDeal('${deal.id}')"
+                >
+                  Sil
+                </button>
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   EDIT
+========================================================= */
+
+window.editDeal =
+  function(id){
+
+    const deal =
+      allDeals.find(
+        item =>
+          String(item.id) ===
+          String(id)
+      );
+
+
+    if(!deal){
+      return;
+    }
+
+
+    editingDealId =
+      deal.id;
+
+
+    editingImageUrl =
+      deal.image_url ||
+      null;
+
+
+    editingOldImageUrl =
+      deal.image_url ||
+      null;
+
+
+    selectedImageFile =
+      null;
+
+
+    $("formTitle").textContent =
+      "✏️ Fırsatı Düzenle";
+
+
+    $("productLink").value =
+      deal.affiliate_url ||
+      "";
+
+
+    $("productName").value =
+      deal.title ||
+      "";
+
+
+    $("productCategory").value =
+      deal.category ||
+      "";
+
+
+    $("oldPrice").value =
+      deal.old_price !== null &&
+      deal.old_price !== undefined
+        ? formatInputPrice(
+            deal.old_price
+          )
+        : "";
+
+
+    $("newPrice").value =
+      deal.new_price !== null &&
+      deal.new_price !== undefined
+        ? formatInputPrice(
+            deal.new_price
+          )
+        : "";
+
+
+    $("productImage").value =
+      "";
+
+
+    updateLinkStatus();
+
+
+    if(deal.image_url){
+
+      showImage(
+        deal.image_url
+      );
+
+    }else{
+
+      showImage(null);
+
+    }
+
+
+    $("autoPriceStatus").className =
+      "auto-price-status";
+
+    $("autoPriceStatus").textContent =
+      "Mevcut fiyatı değiştirebilirsin.";
+
+
+    $("saveDealButton").textContent =
+      "💾 Değişiklikleri Kaydet";
+
+
+    $("cancelEditButton")
+      .classList
+      .remove("hidden");
+
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  };
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+window.deleteDeal =
+  async function(id){
+
+    const deal =
+      allDeals.find(
+        item =>
+          String(item.id) ===
+          String(id)
+      );
+
+
+    if(!deal){
+      return;
+    }
+
+
+    const confirmed =
+      confirm(
+        `"${deal.title || "Bu fırsat"}" silinsin mi?`
+      );
+
+
+    if(!confirmed){
+      return;
+    }
+
+
+    try{
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("deals")
+          .delete()
+          .eq(
+            "id",
+            id
+          );
+
+
+      if(error){
+        throw error;
+      }
+
+
+      if(deal.image_url){
+
+        await deleteStorageImage(
+          deal.image_url
+        );
+
+      }
+
+
+      alert(
+        "Fırsat silindi."
+      );
+
+
+      await loadEverything();
+
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "Silme işlemi başarısız:\n\n" +
+        (
+          error.message ||
+          "Bilinmeyen hata."
+        )
+      );
+
+    }
+
+  };
+
+
+/* =========================================================
+   RESET FORM
+========================================================= */
+
+$("cancelEditButton")
+  .addEventListener(
+    "click",
+    resetForm
+  );
+
+
+function resetForm(){
+
+  editingDealId =
+    null;
+
+  editingImageUrl =
+    null;
+
+  editingOldImageUrl =
+    null;
+
+  selectedImageFile =
+    null;
+
+
+  $("productLink").value =
+    "";
+
+  $("productName").value =
+    "";
+
+  $("productCategory").value =
+    "";
+
+  $("oldPrice").value =
+    "";
+
+  $("newPrice").value =
+    "";
+
+  $("productImage").value =
+    "";
+
+
+  $("linkStatus").textContent =
+    "";
+
+  $("fetchMessage").textContent =
+    "";
+
+
+  $("autoPriceStatus").className =
+    "auto-price-status";
+
+  $("autoPriceStatus").textContent =
+    "Fiyat otomatik gelmezse buraya manuel yazabilirsin.";
+
+
+  $("formTitle").textContent =
+    "➕ Yeni Fırsat Ekle";
+
+
+  $("saveDealButton").textContent =
+    "💾 Fırsatı Kaydet";
+
+
+  $("cancelEditButton")
+    .classList
+    .add("hidden");
+
+
+  showImage(null);
+
+}
+
+
+/* =========================================================
+   ANALYTICS
+========================================================= */
+
+async function loadAnalytics(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("site_visits")
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    const visits =
+      data || [];
+
+
+    const now =
+      new Date();
+
+
+    const todayKey =
+      getDateKey(now);
+
+
+    const yesterday =
+      new Date(now);
+
+
+    yesterday.setDate(
+      yesterday.getDate()-1
+    );
+
+
+    const yesterdayKey =
+      getDateKey(
+        yesterday
+      );
+
+
+    const weekStart =
+      new Date(now);
+
+
+    weekStart.setDate(
+      weekStart.getDate()-6
+    );
+
+
+    weekStart.setHours(
+      0,0,0,0
+    );
+
+
+    const monthStart =
+      new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      );
+
+
+    const todayVisits =
+      visits.filter(
+        visit =>
+          getDateKey(
+            new Date(
+              visit.created_at
+            )
+          ) === todayKey
+      );
+
+
+    const yesterdayVisits =
+      visits.filter(
+        visit =>
+          getDateKey(
+            new Date(
+              visit.created_at
+            )
+          ) === yesterdayKey
+      );
+
+
+    const weekVisits =
+      visits.filter(
+        visit =>
+          new Date(
+            visit.created_at
+          ) >= weekStart
+      );
+
+
+    const monthVisits =
+      visits.filter(
+        visit =>
+          new Date(
+            visit.created_at
+          ) >= monthStart
+      );
+
+
+    $("todayVisitors").textContent =
+      uniqueVisitors(todayVisits);
+
+
+    $("yesterdayVisitors").textContent =
+      uniqueVisitors(yesterdayVisits);
+
+
+    $("weekVisitors").textContent =
+      uniqueVisitors(weekVisits);
+
+
+    $("monthVisitors").textContent =
+      uniqueVisitors(monthVisits);
+
+
+    $("totalVisits").textContent =
+      visits.length;
+
+
+    const totalClicks =
+      allDeals.reduce(
+        (total,deal) =>
+          total +
+          Number(
+            deal.clicks || 0
+          ),
+        0
+      );
+
+
+    $("totalClicks").textContent =
+      totalClicks;
+
+
+    $("activeDeals").textContent =
+      allDeals.filter(
+        deal =>
+          deal.published
+      ).length;
+
+
+    drawDailyChart(
+      visits
+    );
+
+    drawHourlyChart(
+      todayVisits
+    );
+
+
+    const top =
+      [...allDeals]
+        .sort(
+          (a,b) =>
+            Number(b.clicks || 0) -
+            Number(a.clicks || 0)
+        )[0];
+
+
+    if(!top){
+
+      $("topDeal").textContent =
+        "Henüz fırsat yok.";
+
+    }else{
+
+      $("topDeal").innerHTML = `
+
+        <strong>
+          ${escapeHtml(
+            top.title ||
+            "İsimsiz ürün"
+          )}
+        </strong>
+
+        <br>
+
+        <span style="color:#ff7a00;">
+          ${Number(
+            top.clicks || 0
+          )} tıklama
+        </span>
+
+      `;
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Analytics error:",
+      error
+    );
+
+
+    $("topDeal").textContent =
+      "İstatistikler alınamadı.";
+
+  }
+
+}
+
+
+function uniqueVisitors(visits){
+
+  const set =
+    new Set();
+
+
+  visits.forEach(
+    visit => {
+
+      const key =
+        visit.visitor_id ||
+        visit.ip_hash ||
+        visit.session_id ||
+        visit.id;
+
+
+      if(key){
+
+        set.add(
+          String(key)
+        );
+
+      }
+
+    }
+  );
+
+
+  return set.size;
+
+}
+
+
+function getDateKey(date){
+
+  const y =
+    date.getFullYear();
+
+  const m =
+    String(
+      date.getMonth()+1
+    ).padStart(
+      2,
+      "0"
+    );
+
+  const d =
+    String(
+      date.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  return `${y}-${m}-${d}`;
+
+}
+
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+function setupCanvas(canvas){
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const ratio =
+    window.devicePixelRatio ||
+    1;
+
+
+  canvas.width =
+    rect.width * ratio;
+
+  canvas.height =
+    250 * ratio;
+
+
+  const ctx =
+    canvas.getContext("2d");
+
+
+  ctx.scale(
+    ratio,
+    ratio
+  );
+
+
+  return {
+    ctx,
+    width:rect.width,
+    height:250
+  };
+
+}
+
+
+function drawLineChart(
+  canvas,
+  labels,
+  values
+){
+
+  const {
+    ctx,
+    width,
+    height
+  } =
+    setupCanvas(
+      canvas
+    );
+
+
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  const padding =
+    35;
+
+
+  const chartWidth =
+    width -
+    padding * 2;
+
+
+  const chartHeight =
+    height -
+    padding * 2;
+
+
+  const max =
+    Math.max(
+      ...values,
+      1
+    );
+
+
+  ctx.strokeStyle =
+    "#292930";
+
+  ctx.lineWidth =
+    1;
+
+
+  for(
+    let i=0;
+    i<=4;
+    i++
+  ){
+
+    const y =
+      padding +
+      chartHeight *
+      i /
+      4;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      padding,
+      y
+    );
+
+    ctx.lineTo(
+      width-padding,
+      y
+    );
+
+    ctx.stroke();
+
+  }
+
+
+  ctx.strokeStyle =
+    "#ff7a00";
+
+  ctx.lineWidth =
+    3;
+
+  ctx.beginPath();
+
+
+  values.forEach(
+    (value,index) => {
+
+      const x =
+        padding +
+        (
+          values.length === 1
+            ? chartWidth/2
+            : chartWidth *
+              index /
+              (values.length-1)
+        );
+
+
+      const y =
+        padding +
+        chartHeight -
+        (
+          value /
+          max *
+          chartHeight
+        );
+
+
+      if(index === 0){
+
+        ctx.moveTo(
+          x,
+          y
+        );
+
+      }else{
+
+        ctx.lineTo(
+          x,
+          y
+        );
+
+      }
+
+    }
+  );
+
+
+  ctx.stroke();
+
+
+  values.forEach(
+    (value,index) => {
+
+      const x =
+        padding +
+        (
+          values.length === 1
+            ? chartWidth/2
+            : chartWidth *
+              index /
+              (values.length-1)
+        );
+
+
+      const y =
+        padding +
+        chartHeight -
+        (
+          value /
+          max *
+          chartHeight
+        );
+
+
+      ctx.fillStyle =
+        "#ff7a00";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x,
+        y,
+        4,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+
+      ctx.fillStyle =
+        "#aaa";
+
+      ctx.font =
+        "11px Arial";
+
+      ctx.textAlign =
+        "center";
+
+      ctx.fillText(
+        labels[index],
+        x,
+        height-8
+      );
+
+    }
+  );
+
+}
+
+
+function drawDailyChart(visits){
+
+  const labels = [];
+
+  const values = [];
+
+
+  for(
+    let i=6;
+    i>=0;
+    i--
+  ){
+
+    const date =
+      new Date();
+
+
+    date.setDate(
+      date.getDate()-i
+    );
+
+
+    const key =
+      getDateKey(date);
+
+
+    const count =
+      visits.filter(
+        visit =>
+          getDateKey(
+            new Date(
+              visit.created_at
+            )
+          ) === key
+      ).length;
+
+
+    labels.push(
+      `${date.getDate()}/${date.getMonth()+1}`
+    );
+
+
+    values.push(
+      count
+    );
+
+  }
+
+
+  drawLineChart(
+    $("dailyChart"),
+    labels,
+    values
+  );
+
+}
+
+
+function drawHourlyChart(visits){
+
+  const labels = [];
+
+  const values = [];
+
+
+  for(
+    let hour=0;
+    hour<24;
+    hour++
+  ){
+
+    const count =
+      visits.filter(
+        visit =>
+          new Date(
+            visit.created_at
+          ).getHours() === hour
+      ).length;
+
+
+    labels.push(
+      String(hour)
+    );
+
+
+    values.push(
+      count
+    );
+
+  }
+
+
+  drawLineChart(
+    $("hourlyChart"),
+    labels,
+    values
+  );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+let resizeTimer;
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    clearTimeout(
+      resizeTimer
+    );
+
+
+    resizeTimer =
+      setTimeout(
+        () => {
+
+          if(
+            !$("adminPage")
+              .classList
+              .contains("hidden")
+          ){
+
+            loadAnalytics();
+
+          }
+
+        },
+        250
+      );
+
+  }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+checkSession();
+
+</script>
+
+</body>
+</html>
