@@ -1,3418 +1,2767 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>FırsatRadar</title>
-    <meta name="description" content="Güncel ürün fırsatlarını keşfet.">
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --orange: #ff6b00;
-            --orange-hover: #ff8500;
-            --orange-soft: #fff1e5;
-
-            --bg: #f5f6f8;
-            --card: #ffffff;
-            --header: #ffffff;
-            --text: #171717;
-            --muted: #707070;
-            --border: #e5e5e7;
-            --soft: #f0f1f3;
-
-            --shadow: 0 7px 24px rgba(0,0,0,.07);
-        }
-
-        body.dark {
-            --bg: #101010;
-            --card: #181818;
-            --header: #151515;
-            --text: #f5f5f5;
-            --muted: #a4a4a4;
-            --border: #292929;
-            --soft: #222222;
-            --orange-soft: #2a1b11;
-
-            --shadow: 0 7px 24px rgba(0,0,0,.25);
-        }
-
-        html,
-        body {
-            min-height: 100%;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-            transition:
-                background .2s ease,
-                color .2s ease;
-        }
-
-        button,
-        input,
-        select {
-            font-family: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-
-        /* =====================================================
-           SAYFA
-        ===================================================== */
-
-        #site {
-            width: 100%;
-            min-height: 100vh;
-
-            transition:
-                width .28s ease,
-                margin-left .28s ease;
-        }
-
-        body.filter-open #site {
-            width: calc(100% - 370px);
-            margin-left: 370px;
-        }
-
-
-        /* =====================================================
-           HEADER
-        ===================================================== */
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-
-            min-height: 72px;
-            width: 100%;
-
-            background: var(--header);
-            border-bottom: 1px solid var(--border);
-
-            display: flex;
-            align-items: center;
-            gap: 17px;
-
-            padding: 0 42px;
-
-            transition:
-                background .2s ease,
-                border-color .2s ease;
-        }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: -.7px;
-            white-space: nowrap;
-        }
-
-        .logo span {
-            color: var(--orange);
-        }
-
-
-        /* =====================================================
-           SEARCH
-        ===================================================== */
-
-        .search-box {
-            flex: 1;
-            max-width: 650px;
-            margin-left: auto;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            height: 43px;
-
-            border: 1px solid var(--border);
-            border-radius: 12px;
-
-            background: var(--soft);
-            color: var(--text);
-
-            outline: none;
-
-            padding: 0 15px 0 42px;
-
-            font-size: 14px;
-
-            transition:
-                background .2s ease,
-                border-color .2s ease,
-                color .2s ease;
-        }
-
-        .search-box input:focus {
-            border-color: var(--orange);
-        }
-
-        .search-icon {
-            position: absolute;
-
-            left: 15px;
-            top: 50%;
-
-            transform: translateY(-50%);
-
-            color: var(--muted);
-            font-size: 18px;
-
-            pointer-events: none;
-        }
-
-
-        /* =====================================================
-           TEMA
-        ===================================================== */
-
-        .theme-toggle {
-            width: 64px;
-            height: 34px;
-
-            flex-shrink: 0;
-
-            position: relative;
-
-            border: 1px solid var(--border);
-            border-radius: 999px;
-
-            background: var(--soft);
-
-            transition:
-                background .2s ease,
-                border-color .2s ease;
-        }
-
-        .theme-slider {
-            position: absolute;
-
-            top: 2px;
-            left: 3px;
-
-            width: 28px;
-            height: 28px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 50%;
-
-            background: var(--card);
-
-            box-shadow:
-                0 2px 7px rgba(0,0,0,.15);
-
-            transition:
-                left .25s ease,
-                background .2s ease;
-        }
-
-        body.dark .theme-slider {
-            left: 31px;
-        }
-
-
-        /* =====================================================
-           FİLTRE PANELİ
-        ===================================================== */
-
-        .filter-drawer {
-            position: fixed;
-
-            left: 0;
-            top: 0;
-            bottom: 0;
-
-            width: 370px;
-
-            z-index: 2000;
-
-            background: var(--card);
-
-            border-right: 1px solid var(--border);
-
-            transform: translateX(-100%);
-
-            transition:
-                transform .28s ease,
-                background .2s ease;
-
-            display: flex;
-            flex-direction: column;
-
-            box-shadow:
-                8px 0 28px rgba(0,0,0,.08);
-        }
-
-        .filter-drawer.open {
-            transform: translateX(0);
-        }
-
-        .filter-header {
-            min-height: 72px;
-
-            padding: 15px 20px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            border-bottom: 1px solid var(--border);
-        }
-
-        .filter-title {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .filter-title strong {
-            font-size: 20px;
-        }
-
-        .filter-summary {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .close-filter {
-            width: 38px;
-            height: 38px;
-
-            border: none;
-            border-radius: 10px;
-
-            background: var(--soft);
-            color: var(--text);
-
-            font-size: 24px;
-        }
-
-        .close-filter:hover {
-            color: var(--orange);
-        }
-
-        .filter-body {
-            flex: 1;
-
-            overflow-y: auto;
-
-            padding: 20px;
-        }
-
-        .filter-section {
-            margin-bottom: 27px;
-        }
-
-        .filter-section h3 {
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        .filter-options {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .filter-option {
-            width: 100%;
-            min-height: 43px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 9px 12px;
-
-            border: 1px solid var(--border);
-            border-radius: 10px;
-
-            background: var(--card);
-            color: var(--text);
-
-            text-align: left;
-
-            font-size: 13px;
-            font-weight: 700;
-
-            transition: .15s;
-        }
-
-        .filter-option:hover {
-            border-color: var(--orange);
-        }
-
-        .filter-option.active {
-            border-color: var(--orange);
-            background: var(--orange-soft);
-            color: var(--orange);
-        }
-
-        .option-check {
-            width: 19px;
-            height: 19px;
-
-            flex-shrink: 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 1px solid var(--border);
-            border-radius: 50%;
-
-            font-size: 11px;
-        }
-
-        .filter-option.active .option-check {
-            background: var(--orange);
-            border-color: var(--orange);
-            color: white;
-        }
-
-        .filter-footer {
-            padding: 14px 20px;
-
-            display: flex;
-            gap: 9px;
-
-            border-top: 1px solid var(--border);
-
-            background: var(--card);
-        }
-
-        .clear-filter,
-        .apply-filter {
-            height: 45px;
-
-            border-radius: 10px;
-
-            font-size: 13px;
-            font-weight: 900;
-        }
-
-        .clear-filter {
-            flex: 1;
-
-            border: 1px solid var(--border);
-
-            background: var(--soft);
-            color: var(--text);
-        }
-
-        .apply-filter {
-            flex: 1.4;
-
-            border: none;
-
-            background: var(--orange);
-            color: white;
-        }
-
-        .apply-filter:hover {
-            background: var(--orange-hover);
-        }
-
-
-        /* =====================================================
-           HERO
-        ===================================================== */
-
-        .hero {
-            width: calc(100% - 84px);
-            max-width: 1400px;
-
-            min-height: 205px;
-
-            margin: 28px auto 20px;
-
-            padding: 36px;
-
-            display: flex;
-            align-items: center;
-
-            position: relative;
-
-            overflow: hidden;
-
-            border-radius: 22px;
-
-            color: white;
-
-            background:
-                linear-gradient(
-                    115deg,
-                    #ff6b00 0%,
-                    #ff8500 53%,
-                    #171717 100%
-                );
-        }
-
-        .hero::after {
-            content: "";
-
-            position: absolute;
-
-            width: 320px;
-            height: 320px;
-
-            right: -110px;
-            top: -130px;
-
-            border: 70px solid rgba(255,255,255,.08);
-
-            border-radius: 50%;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero h1 {
-            font-size: 38px;
-            letter-spacing: -1.2px;
-            margin-bottom: 10px;
-        }
-
-        .hero p {
-            font-size: 15px;
-            opacity: .93;
-        }
-
-
-        /* =====================================================
-           SONUÇ
-        ===================================================== */
-
-        .result-area {
-            width: calc(100% - 84px);
-            max-width: 1400px;
-
-            margin: 0 auto 18px;
-        }
-
-        .result-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 15px;
-
-            margin-bottom: 14px;
-        }
-
-        .result-count {
-            color: var(--muted);
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .active-filter-text {
-            color: var(--orange);
-            font-size: 13px;
-            font-weight: 800;
-            text-align: right;
-        }
-
-
-        /* =====================================================
-           KONTROLLER
-        ===================================================== */
-
-        .control-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            width: 100%;
-        }
-
-        .control-pill-wrap {
-            position: relative;
-        }
-
-        .control-pill {
-            height: 44px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            gap: 8px;
-
-            padding: 0 15px;
-
-            border: 1px solid var(--border);
-            border-radius: 999px;
-
-            background: var(--card);
-            color: var(--text);
-
-            font-size: 13px;
-            font-weight: 900;
-
-            transition: .2s;
-        }
-
-        .control-pill:hover,
-        .control-pill.active {
-            border-color: var(--orange);
-            color: var(--orange);
-        }
-
-        .filter-control-pill {
-            min-width: 122px;
-        }
-
-        .sort-control-pill {
-            min-width: 122px;
-        }
-
-        .control-icon {
-            font-size: 15px;
-            line-height: 1;
-        }
-
-        .pill-badge {
-            min-width: 20px;
-            height: 20px;
-
-            padding: 0 6px;
-
-            display: none;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 999px;
-
-            background: var(--orange);
-            color: white;
-
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-        .pill-badge.show {
-            display: flex;
-        }
-
-
-        /* =====================================================
-           SIRALAMA
-        ===================================================== */
-
-        .sort-menu {
-            position: absolute;
-
-            left: 0;
-            top: calc(100% + 8px);
-
-            width: 230px;
-
-            padding: 7px;
-
-            display: none;
-
-            z-index: 1500;
-
-            background: var(--card);
-
-            border: 1px solid var(--border);
-            border-radius: 14px;
-
-            box-shadow:
-                0 14px 35px rgba(0,0,0,.14);
-        }
-
-        .sort-menu.open {
-            display: block;
-        }
-
-        .sort-option {
-            width: 100%;
-            min-height: 40px;
-
-            padding: 9px 11px;
-
-            border: none;
-            border-radius: 9px;
-
-            background: transparent;
-            color: var(--text);
-
-            text-align: left;
-
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .sort-option:hover {
-            background: var(--soft);
-        }
-
-        .sort-option.active {
-            background: var(--orange-soft);
-            color: var(--orange);
-        }
-
-
-        /* =====================================================
-           ÜRÜNLER
-        ===================================================== */
-
-        .deals {
-            width: calc(100% - 84px);
-            max-width: 1400px;
-
-            margin: 0 auto 55px;
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-
-            gap: 18px;
-        }
-
-        .deal-card {
-            overflow: hidden;
-
-            background: var(--card);
-
-            border: 1px solid var(--border);
-            border-radius: 17px;
-
-            box-shadow: var(--shadow);
-
-            display: flex;
-            flex-direction: column;
-
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease,
-                background .2s ease;
-        }
-
-        .deal-card:hover {
-            transform: translateY(-3px);
-
-            box-shadow:
-                0 13px 32px rgba(0,0,0,.11);
-        }
-
-        .deal-image-wrap {
-            height: 230px;
-
-            position: relative;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            flex-shrink: 0;
-
-            background: var(--soft);
-        }
-
-        .deal-image {
-            width: 100%;
-            height: 100%;
-
-            padding: 18px;
-
-            object-fit: contain;
-        }
-
-        .category-tag {
-            position: absolute;
-
-            top: 12px;
-            left: 12px;
-
-            padding: 6px 10px;
-
-            border-radius: 999px;
-
-            background: var(--orange);
-            color: white;
-
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-        .deal-content {
-            padding: 17px;
-
-            display: flex;
-            flex-direction: column;
-
-            flex: 1;
-        }
-
-
-        /* =====================================================
-           ÜRÜN BAŞLIĞI
-           MAKSİMUM 3 SATIR
-        ===================================================== */
-
-        .deal-title {
-            height: 66px;
-            min-height: 66px;
-
-            margin-bottom: 12px;
-
-            font-size: 15px;
-            line-height: 1.45;
-            font-weight: 800;
-
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-
-            word-break: break-word;
-        }
-
-
-        /* =====================================================
-           İNDİRİM
-        ===================================================== */
-
-        .discount {
-            display: inline-block;
-            align-self: flex-start;
-
-            margin-bottom: 10px;
-            padding: 4px 7px;
-
-            border-radius: 6px;
-
-            background: var(--orange-soft);
-            color: var(--orange);
-
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-
-        /* =====================================================
-           FİYAT
-        ===================================================== */
-
-        .prices {
-            display: flex;
-            align-items: end;
-
-            gap: 9px;
-
-            margin-bottom: 10px;
-
-            flex-wrap: wrap;
-        }
-
-        .old-price {
-            color: var(--muted);
-
-            font-size: 12px;
-
-            text-decoration: line-through;
-        }
-
-        .new-price {
-            color: var(--orange);
-
-            font-size: 21px;
-            font-weight: 900;
-        }
-
-
-        /* =====================================================
-           META
-        ===================================================== */
-
-        .deal-meta {
-            display: flex;
-            justify-content: space-between;
-
-            margin-bottom: 13px;
-
-            color: var(--muted);
-
-            font-size: 11px;
-        }
-
-
-        /* =====================================================
-           BUTON
-        ===================================================== */
-
-        .deal-button {
-            width: 100%;
-            height: 42px;
-
-            margin-top: auto;
-
-            border: none;
-            border-radius: 10px;
-
-            background: var(--orange);
-            color: white;
-
-            font-size: 13px;
-            font-weight: 900;
-        }
-
-        .deal-button:hover {
-            background: var(--orange-hover);
-        }
-
-
-        /* =====================================================
-           BOŞ
-        ===================================================== */
-
-        .empty {
-            grid-column: 1 / -1;
-
-            padding: 65px 20px;
-
-            text-align: center;
-
-            background: var(--card);
-
-            border: 1px solid var(--border);
-            border-radius: 17px;
-        }
-
-        .empty-icon {
-            margin-bottom: 12px;
-            font-size: 40px;
-        }
-
-        .empty h2 {
-            margin-bottom: 7px;
-            font-size: 20px;
-        }
-
-        .empty p {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-
-        /* =====================================================
-           FOOTER
-        ===================================================== */
-
-        footer {
-            padding: 25px 42px;
-
-            background: var(--header);
-
-            border-top: 1px solid var(--border);
-
-            color: var(--muted);
-
-            text-align: center;
-
-            font-size: 12px;
-        }
-
-
-        /* =====================================================
-           TABLET
-        ===================================================== */
-
-        @media (max-width: 1100px) {
-
-            body.filter-open #site {
-                width: calc(100% - 330px);
-                margin-left: 330px;
-            }
-
-            .filter-drawer {
-                width: 330px;
-            }
-
-            header {
-                padding: 0 25px;
-            }
-
-            .hero,
-            .result-area,
-            .deals {
-                width: calc(100% - 50px);
-            }
-
-            .deals {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-        }
-
-
-        /* =====================================================
-           MOBİL
-        ===================================================== */
-
-        @media (max-width: 700px) {
-
-            /* Filtre açılınca site küçülmez */
-            body.filter-open #site {
-                width: 100%;
-                margin-left: 0;
-            }
-
-            /* Filtre ekranın tamamını kaplamaz */
-            .filter-drawer {
-                width: 78vw;
-                max-width: 330px;
-
-                box-shadow:
-                    8px 0 30px rgba(0,0,0,.20);
-            }
-
-            header {
-                min-height: 64px;
-
-                padding: 10px 14px;
-
-                flex-wrap: wrap;
-
-                gap: 9px;
-            }
-
-            .logo {
-                font-size: 19px;
-            }
-
-            .theme-toggle {
-                margin-left: auto;
-            }
-
-            .search-box {
-                order: 5;
-
-                flex-basis: 100%;
-
-                max-width: none;
-            }
-
-
-            /* HERO */
-
-            .hero {
-                width: calc(100% - 28px);
-
-                min-height: 175px;
-
-                margin-top: 18px;
-
-                padding: 27px 22px;
-
-                border-radius: 18px;
-            }
-
-            .hero h1 {
-                display: block;
-
-                font-size: 28px;
-                line-height: 1.15;
-            }
-
-            .hero p {
-                display: block;
-
-                max-width: 270px;
-
-                font-size: 13px;
-            }
-
-
-            /* SONUÇ */
-
-            .result-area {
-                width: calc(100% - 28px);
-
-                margin-bottom: 14px;
-            }
-
-            .result-bar {
-                align-items: flex-start;
-
-                flex-direction: column;
-
-                gap: 6px;
-
-                margin-bottom: 12px;
-            }
-
-            .active-filter-text {
-                text-align: left;
-            }
-
-
-            /* BUTONLAR */
-
-            .control-row {
-                gap: 8px;
-            }
-
-            .control-pill-wrap {
-                flex: 1;
-            }
-
-            .control-pill {
-                width: 100%;
-
-                padding: 0 10px;
-
-                font-size: 12px;
-            }
-
-            .filter-control-pill,
-            .sort-control-pill {
-                min-width: 0;
-            }
-
-            .sort-menu {
-                width: 100%;
-
-                min-width: 210px;
-
-                left: auto;
-                right: 0;
-            }
-
-
-            /* =================================================
-               MOBİL ÜRÜNLER
-               2'Lİ YAN YANA
-            ================================================= */
-
-            .deals {
-                width: calc(100% - 28px);
-
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-
-                gap: 10px;
-            }
-
-            .deal-card {
-                border-radius: 13px;
-            }
-
-            .deal-image-wrap {
-                height: 150px;
-            }
-
-            .deal-image {
-                padding: 10px;
-            }
-
-            .category-tag {
-                top: 7px;
-                left: 7px;
-
-                padding: 4px 7px;
-
-                font-size: 9px;
-            }
-
-            .deal-content {
-                padding: 10px;
-            }
-
-
-            /* MOBİLDE 3 SATIR SABİT */
-
-            .deal-title {
-                height: 49px;
-                min-height: 49px;
-
-                margin-bottom: 7px;
-
-                font-size: 12px;
-                line-height: 1.35;
-                font-weight: 800;
-
-                display: -webkit-box;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 3;
-
-                overflow: hidden;
-                text-overflow: ellipsis;
-
-                word-break: break-word;
-            }
-
-            .discount {
-                margin-bottom: 7px;
-
-                padding: 3px 5px;
-
-                font-size: 9px;
-            }
-
-            .prices {
-                gap: 4px;
-
-                margin-bottom: 7px;
-
-                flex-wrap: wrap;
-            }
-
-            .old-price {
-                font-size: 9px;
-            }
-
-            .new-price {
-                font-size: 16px;
-            }
-
-            .deal-meta {
-                margin-bottom: 8px;
-
-                font-size: 9px;
-            }
-
-            .deal-button {
-                height: 35px;
-
-                border-radius: 8px;
-
-                font-size: 10px;
-            }
-
-            footer {
-                padding: 23px 15px;
-            }
-        }
-
-
-        /* =====================================================
-           ÇOK KÜÇÜK TELEFON
-        ===================================================== */
-
-        @media (max-width: 420px) {
-
-            .filter-drawer {
-                width: 82vw;
-            }
-
-            .deals {
-                width: calc(100% - 20px);
-
-                gap: 8px;
-            }
-
-            .deal-image-wrap {
-                height: 135px;
-            }
-
-            .deal-content {
-                padding: 9px;
-            }
-
-
-            /* 3 SATIR - KÜÇÜK EKRAN */
-
-            .deal-title {
-                height: 45px;
-                min-height: 45px;
-
-                font-size: 11px;
-                line-height: 1.35;
-
-                display: -webkit-box;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 3;
-
-                overflow: hidden;
-                text-overflow: ellipsis;
-
-                word-break: break-word;
-            }
-
-            .new-price {
-                font-size: 15px;
-            }
-
-            .deal-button {
-                height: 34px;
-
-                font-size: 10px;
-            }
-
-            .control-pill {
-                gap: 6px;
-
-                padding: 0 8px;
-
-                font-size: 11px;
-            }
-
-            .control-icon {
-                font-size: 14px;
-            }
-
-            .pill-badge {
-                min-width: 18px;
-
-                height: 18px;
-
-                font-size: 10px;
-            }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FırsatRadar</title>
+<meta name="description" content="Güncel ürün fırsatlarını keşfet.">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+--orange:#ff6b00;
+--orange-hover:#ff8500;
+--orange-soft:#fff1e5;
+--bg:#f5f6f8;
+--card:#fff;
+--header:#fff;
+--text:#171717;
+--muted:#707070;
+--border:#e5e5e7;
+--soft:#f0f1f3;
+--shadow:0 7px 24px rgba(0,0,0,.07)
+}
+
+body.dark{
+--bg:#101010;
+--card:#181818;
+--header:#151515;
+--text:#f5f5f5;
+--muted:#a4a4a4;
+--border:#292929;
+--soft:#222;
+--orange-soft:#2a1b11;
+--shadow:0 7px 24px rgba(0,0,0,.25)
+}
+
+html,body{min-height:100%}
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:var(--bg);
+color:var(--text);
+overflow-x:hidden;
+transition:background .2s ease,color .2s ease
+}
+
+button,input,select{font-family:inherit}
+button{cursor:pointer}
+
+#site{
+width:100%;
+min-height:100vh;
+transition:width .28s ease,margin-left .28s ease
+}
+
+body.filter-open #site{
+width:calc(100% - 370px);
+margin-left:370px
+}
+
+/* HEADER */
+
+header{
+position:sticky;
+top:0;
+z-index:1000;
+min-height:72px;
+width:100%;
+background:var(--header);
+border-bottom:1px solid var(--border);
+display:flex;
+align-items:center;
+gap:17px;
+padding:0 42px;
+transition:background .2s ease,border-color .2s ease
+}
+
+.logo{
+font-size:22px;
+font-weight:900;
+letter-spacing:-.7px;
+white-space:nowrap
+}
+
+.logo span{color:var(--orange)}
+
+.search-box{
+flex:1;
+max-width:650px;
+margin-left:auto;
+position:relative
+}
+
+.search-box input{
+width:100%;
+height:43px;
+border:1px solid var(--border);
+border-radius:12px;
+background:var(--soft);
+color:var(--text);
+outline:none;
+padding:0 15px 0 42px;
+font-size:14px;
+transition:background .2s ease,border-color .2s ease,color .2s ease
+}
+
+.search-box input:focus{border-color:var(--orange)}
+
+.search-icon{
+position:absolute;
+left:15px;
+top:50%;
+transform:translateY(-50%);
+color:var(--muted);
+font-size:18px;
+pointer-events:none
+}
+
+/* YENİ: SAĞ ÜST */
+
+.header-links{
+display:flex;
+align-items:center;
+gap:18px;
+flex-shrink:0
+}
+
+.header-links button{
+border:none;
+background:transparent;
+color:var(--text);
+font-size:13px;
+font-weight:800;
+padding:8px 2px;
+transition:color .2s ease
+}
+
+.header-links button:hover{color:var(--orange)}
+
+/* TEMA */
+
+.theme-toggle{
+width:64px;
+height:34px;
+flex-shrink:0;
+position:relative;
+border:1px solid var(--border);
+border-radius:999px;
+background:var(--soft);
+transition:background .2s ease,border-color .2s ease
+}
+
+.theme-slider{
+position:absolute;
+top:2px;
+left:3px;
+width:28px;
+height:28px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+background:var(--card);
+box-shadow:0 2px 7px rgba(0,0,0,.15);
+transition:left .25s ease,background .2s ease
+}
+
+body.dark .theme-slider{left:31px}
+
+/* FİLTRE */
+
+.filter-drawer{
+position:fixed;
+left:0;
+top:0;
+bottom:0;
+width:370px;
+z-index:2000;
+background:var(--card);
+border-right:1px solid var(--border);
+transform:translateX(-100%);
+transition:transform .28s ease,background .2s ease;
+display:flex;
+flex-direction:column;
+box-shadow:8px 0 28px rgba(0,0,0,.08)
+}
+
+.filter-drawer.open{transform:translateX(0)}
+
+.filter-header{
+min-height:72px;
+padding:15px 20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:1px solid var(--border)
+}
+
+.filter-title{
+display:flex;
+flex-direction:column;
+gap:4px
+}
+
+.filter-title strong{font-size:20px}
+.filter-summary{color:var(--muted);font-size:12px}
+
+.close-filter{
+width:38px;
+height:38px;
+border:none;
+border-radius:10px;
+background:var(--soft);
+color:var(--text);
+font-size:24px
+}
+
+.close-filter:hover{color:var(--orange)}
+
+.filter-body{
+flex:1;
+overflow-y:auto;
+padding:20px
+}
+
+.filter-section{margin-bottom:27px}
+.filter-section h3{font-size:14px;margin-bottom:12px}
+
+.filter-options{
+display:flex;
+flex-direction:column;
+gap:7px
+}
+
+.filter-option{
+width:100%;
+min-height:43px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:9px 12px;
+border:1px solid var(--border);
+border-radius:10px;
+background:var(--card);
+color:var(--text);
+text-align:left;
+font-size:13px;
+font-weight:700;
+transition:.15s
+}
+
+.filter-option:hover{border-color:var(--orange)}
+
+.filter-option.active{
+border-color:var(--orange);
+background:var(--orange-soft);
+color:var(--orange)
+}
+
+.option-check{
+width:19px;
+height:19px;
+flex-shrink:0;
+display:flex;
+align-items:center;
+justify-content:center;
+border:1px solid var(--border);
+border-radius:50%;
+font-size:11px
+}
+
+.filter-option.active .option-check{
+background:var(--orange);
+border-color:var(--orange);
+color:white
+}
+
+.filter-footer{
+padding:14px 20px;
+display:flex;
+gap:9px;
+border-top:1px solid var(--border);
+background:var(--card)
+}
+
+.clear-filter,.apply-filter{
+height:45px;
+border-radius:10px;
+font-size:13px;
+font-weight:900
+}
+
+.clear-filter{
+flex:1;
+border:1px solid var(--border);
+background:var(--soft);
+color:var(--text)
+}
+
+.apply-filter{
+flex:1.4;
+border:none;
+background:var(--orange);
+color:white
+}
+
+.apply-filter:hover{background:var(--orange-hover)}
+
+/* HERO */
+
+.hero{
+width:calc(100% - 84px);
+max-width:1400px;
+min-height:205px;
+margin:28px auto 20px;
+padding:36px;
+display:flex;
+align-items:center;
+position:relative;
+overflow:hidden;
+border-radius:22px;
+color:white;
+background:linear-gradient(115deg,#ff6b00 0%,#ff8500 53%,#171717 100%)
+}
+
+.hero::after{
+content:"";
+position:absolute;
+width:320px;
+height:320px;
+right:-110px;
+top:-130px;
+border:70px solid rgba(255,255,255,.08);
+border-radius:50%
+}
+
+.hero-content{position:relative;z-index:2}
+.hero h1{font-size:38px;letter-spacing:-1.2px;margin-bottom:10px}
+.hero p{font-size:15px;opacity:.93}
+
+/* SONUÇ */
+
+.result-area{
+width:calc(100% - 84px);
+max-width:1400px;
+margin:0 auto 18px
+}
+
+.result-bar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:15px;
+margin-bottom:14px
+}
+
+.result-count{
+color:var(--muted);
+font-size:14px;
+font-weight:700
+}
+
+.active-filter-text{
+color:var(--orange);
+font-size:13px;
+font-weight:800;
+text-align:right
+}
+
+/* KONTROLLER */
+
+.control-row{
+display:flex;
+align-items:center;
+gap:10px;
+width:100%
+}
+
+.control-pill-wrap{position:relative}
+
+.control-pill{
+height:44px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+padding:0 15px;
+border:1px solid var(--border);
+border-radius:999px;
+background:var(--card);
+color:var(--text);
+font-size:13px;
+font-weight:900;
+transition:.2s
+}
+
+.control-pill:hover,
+.control-pill.active{
+border-color:var(--orange);
+color:var(--orange)
+}
+
+.filter-control-pill,.sort-control-pill{min-width:122px}
+.control-icon{font-size:15px;line-height:1}
+
+.pill-badge{
+min-width:20px;
+height:20px;
+padding:0 6px;
+display:none;
+align-items:center;
+justify-content:center;
+border-radius:999px;
+background:var(--orange);
+color:white;
+font-size:11px;
+font-weight:900
+}
+
+.pill-badge.show{display:flex}
+
+/* SIRALAMA */
+
+.sort-menu{
+position:absolute;
+left:0;
+top:calc(100% + 8px);
+width:230px;
+padding:7px;
+display:none;
+z-index:1500;
+background:var(--card);
+border:1px solid var(--border);
+border-radius:14px;
+box-shadow:0 14px 35px rgba(0,0,0,.14)
+}
+
+.sort-menu.open{display:block}
+
+.sort-option{
+width:100%;
+min-height:40px;
+padding:9px 11px;
+border:none;
+border-radius:9px;
+background:transparent;
+color:var(--text);
+text-align:left;
+font-size:13px;
+font-weight:700
+}
+
+.sort-option:hover{background:var(--soft)}
+.sort-option.active{background:var(--orange-soft);color:var(--orange)}
+
+/* ÜRÜNLER */
+
+.deals{
+width:calc(100% - 84px);
+max-width:1400px;
+margin:0 auto 55px;
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:18px
+}
+
+.deal-card{
+overflow:hidden;
+background:var(--card);
+border:1px solid var(--border);
+border-radius:17px;
+box-shadow:var(--shadow);
+display:flex;
+flex-direction:column;
+transition:transform .2s ease,box-shadow .2s ease,background .2s ease
+}
+
+.deal-card:hover{
+transform:translateY(-3px);
+box-shadow:0 13px 32px rgba(0,0,0,.11)
+}
+
+.deal-image-wrap{
+height:230px;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-shrink:0;
+background:var(--soft)
+}
+
+.deal-image{
+width:100%;
+height:100%;
+padding:18px;
+object-fit:contain
+}
+
+.category-tag{
+position:absolute;
+top:12px;
+left:12px;
+padding:6px 10px;
+border-radius:999px;
+background:var(--orange);
+color:white;
+font-size:11px;
+font-weight:900
+}
+
+.deal-content{
+padding:17px;
+display:flex;
+flex-direction:column;
+flex:1
+}
+
+.deal-title{
+height:66px;
+min-height:66px;
+margin-bottom:12px;
+font-size:15px;
+line-height:1.45;
+font-weight:800;
+display:-webkit-box;
+-webkit-box-orient:vertical;
+-webkit-line-clamp:3;
+overflow:hidden;
+text-overflow:ellipsis;
+word-break:break-word
+}
+
+.discount{
+display:inline-block;
+align-self:flex-start;
+margin-bottom:10px;
+padding:4px 7px;
+border-radius:6px;
+background:var(--orange-soft);
+color:var(--orange);
+font-size:11px;
+font-weight:900
+}
+
+.prices{
+display:flex;
+align-items:end;
+gap:9px;
+margin-bottom:10px;
+flex-wrap:wrap
+}
+
+.old-price{
+color:var(--muted);
+font-size:12px;
+text-decoration:line-through
+}
+
+.new-price{
+color:var(--orange);
+font-size:21px;
+font-weight:900
+}
+
+.deal-meta{
+display:flex;
+justify-content:space-between;
+margin-bottom:13px;
+color:var(--muted);
+font-size:11px
+}
+
+/* YENİ: BUTONLAR */
+
+.deal-actions{
+display:flex;
+align-items:center;
+gap:8px;
+margin-top:auto
+}
+
+.deal-button{
+flex:1;
+width:100%;
+height:42px;
+border:none;
+border-radius:10px;
+background:var(--orange);
+color:white;
+font-size:13px;
+font-weight:900
+}
+
+.deal-button:hover{background:var(--orange-hover)}
+
+.share-button{
+width:42px;
+height:42px;
+flex-shrink:0;
+border:1px solid var(--border);
+border-radius:10px;
+background:var(--soft);
+color:var(--text);
+font-size:18px;
+font-weight:700;
+display:flex;
+align-items:center;
+justify-content:center;
+transition:.2s
+}
+
+.share-button:hover{
+border-color:var(--orange);
+color:var(--orange)
+}
+
+/* BOŞ */
+
+.empty{
+grid-column:1/-1;
+padding:65px 20px;
+text-align:center;
+background:var(--card);
+border:1px solid var(--border);
+border-radius:17px
+}
+
+.empty-icon{margin-bottom:12px;font-size:40px}
+.empty h2{margin-bottom:7px;font-size:20px}
+.empty p{color:var(--muted);font-size:13px}
+
+/* FOOTER */
+
+footer{
+padding:25px 42px;
+background:var(--header);
+border-top:1px solid var(--border);
+color:var(--muted);
+text-align:center;
+font-size:12px
+}
+
+/* BİLGİ PENCERESİ */
+
+.info-overlay{
+position:fixed;
+inset:0;
+z-index:5000;
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+background:rgba(0,0,0,.45)
+}
+
+.info-overlay.open{display:flex}
+
+.info-box{
+width:100%;
+max-width:520px;
+padding:28px;
+background:var(--card);
+color:var(--text);
+border:1px solid var(--border);
+border-radius:18px;
+box-shadow:0 20px 60px rgba(0,0,0,.2)
+}
+
+.info-box h2{
+margin-bottom:12px;
+font-size:22px
+}
+
+.info-box p{
+color:var(--muted);
+font-size:14px;
+line-height:1.7
+}
+
+.info-close{
+float:right;
+width:34px;
+height:34px;
+border:none;
+border-radius:9px;
+background:var(--soft);
+color:var(--text);
+font-size:20px
+}
+
+.info-close:hover{color:var(--orange)}
+
+/* TABLET */
+
+@media(max-width:1100px){
+
+body.filter-open #site{
+width:calc(100% - 330px);
+margin-left:330px
+}
+
+.filter-drawer{width:330px}
+
+header{padding:0 25px}
+
+.hero,.result-area,.deals{
+width:calc(100% - 50px)
+}
+
+.deals{
+grid-template-columns:repeat(2,minmax(0,1fr))
+}
+
+}
+
+/* MOBİL */
+
+@media(max-width:700px){
+
+body.filter-open #site{
+width:100%;
+margin-left:0
+}
+
+.filter-drawer{
+width:78vw;
+max-width:330px;
+box-shadow:8px 0 30px rgba(0,0,0,.20)
+}
+
+header{
+min-height:64px;
+padding:10px 14px;
+flex-wrap:wrap;
+gap:9px
+}
+
+.logo{font-size:19px}
+
+.header-links{
+gap:8px
+}
+
+.header-links button{
+font-size:11px
+}
+
+.theme-toggle{margin-left:auto}
+
+.search-box{
+order:5;
+flex-basis:100%;
+max-width:none
+}
+
+.hero{
+width:calc(100% - 28px);
+min-height:175px;
+margin-top:18px;
+padding:27px 22px;
+border-radius:18px
+}
+
+.hero h1{
+display:block;
+font-size:28px;
+line-height:1.15
+}
+
+.hero p{
+display:block;
+max-width:270px;
+font-size:13px
+}
+
+.result-area{
+width:calc(100% - 28px);
+margin-bottom:14px
+}
+
+.result-bar{
+align-items:flex-start;
+flex-direction:column;
+gap:6px;
+margin-bottom:12px
+}
+
+.active-filter-text{text-align:left}
+
+.control-row{gap:8px}
+.control-pill-wrap{flex:1}
+
+.control-pill{
+width:100%;
+padding:0 10px;
+font-size:12px
+}
+
+.filter-control-pill,
+.sort-control-pill{min-width:0}
+
+.sort-menu{
+width:100%;
+min-width:210px;
+left:auto;
+right:0
+}
+
+.deals{
+width:calc(100% - 28px);
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:10px
+}
+
+.deal-card{border-radius:13px}
+
+.deal-image-wrap{height:150px}
+
+.deal-image{padding:10px}
+
+.category-tag{
+top:7px;
+left:7px;
+padding:4px 7px;
+font-size:9px
+}
+
+.deal-content{padding:10px}
+
+.deal-title{
+height:49px;
+min-height:49px;
+margin-bottom:7px;
+font-size:12px;
+line-height:1.35
+}
+
+.discount{
+margin-bottom:7px;
+padding:3px 5px;
+font-size:9px
+}
+
+.prices{
+gap:4px;
+margin-bottom:7px
+}
+
+.old-price{font-size:9px}
+.new-price{font-size:16px}
+
+.deal-meta{
+margin-bottom:8px;
+font-size:9px
+}
+
+.deal-actions{gap:6px}
+
+.deal-button{
+height:35px;
+border-radius:8px;
+font-size:10px
+}
+
+.share-button{
+width:35px;
+height:35px;
+border-radius:8px;
+font-size:15px
+}
+
+footer{padding:23px 15px}
+
+.info-box{padding:22px}
+
+}
+
+@media(max-width:420px){
+
+.filter-drawer{width:82vw}
+
+.header-links{gap:6px}
+
+.header-links button{font-size:10px}
+
+.deals{
+width:calc(100% - 20px);
+gap:8px
+}
+
+.deal-image-wrap{height:135px}
+.deal-content{padding:9px}
+
+.deal-title{
+height:45px;
+min-height:45px;
+font-size:11px;
+line-height:1.35
+}
+
+.new-price{font-size:15px}
+
+.deal-button{
+height:34px;
+font-size:10px
+}
+
+.share-button{
+width:34px;
+height:34px
+}
+
+.control-pill{
+gap:6px;
+padding:0 8px;
+font-size:11px
+}
+
+.control-icon{font-size:14px}
+
+.pill-badge{
+min-width:18px;
+height:18px;
+font-size:10px
+}
+
+}
+</style>
 </head>
-
 
 <body>
 
+<!-- FİLTRE PANELİ -->
 
-<!-- =========================================================
-     FİLTRE PANELİ
-========================================================= -->
+<aside id="filterDrawer" class="filter-drawer" aria-hidden="true">
 
-<aside
-    id="filterDrawer"
-    class="filter-drawer"
-    aria-hidden="true"
->
+<div class="filter-header">
 
-    <div class="filter-header">
+<div class="filter-title">
+<strong>Filtreler</strong>
 
-        <div class="filter-title">
+<span id="filterSummary" class="filter-summary">
+Tüm fırsatlar
+</span>
+</div>
 
-            <strong>Filtreler</strong>
+<button id="closeFilter" class="close-filter" type="button">×</button>
 
-            <span
-                id="filterSummary"
-                class="filter-summary"
-            >
-                Tüm fırsatlar
-            </span>
+</div>
 
-        </div>
+<div class="filter-body">
 
-        <button
-            id="closeFilter"
-            class="close-filter"
-            type="button"
-        >
-            ×
-        </button>
+<section class="filter-section">
 
-    </div>
+<h3>Kategoriler</h3>
 
+<div id="filterCategories" class="filter-options"></div>
 
-    <div class="filter-body">
+</section>
 
-        <section class="filter-section">
+<section class="filter-section">
 
-            <h3>Kategoriler</h3>
+<h3>Fiyat Aralığı</h3>
 
-            <div
-                id="filterCategories"
-                class="filter-options"
-            ></div>
+<div id="priceOptions" class="filter-options"></div>
 
-        </section>
+</section>
 
+</div>
 
-        <section class="filter-section">
+<div class="filter-footer">
 
-            <h3>Fiyat Aralığı</h3>
+<button id="clearFilters" class="clear-filter" type="button">
+Temizle
+</button>
 
-            <div
-                id="priceOptions"
-                class="filter-options"
-            ></div>
+<button id="applyFilters" class="apply-filter" type="button">
+Fırsatları Göster
+</button>
 
-        </section>
-
-    </div>
-
-
-    <div class="filter-footer">
-
-        <button
-            id="clearFilters"
-            class="clear-filter"
-            type="button"
-        >
-            Temizle
-        </button>
-
-        <button
-            id="applyFilters"
-            class="apply-filter"
-            type="button"
-        >
-            Fırsatları Göster
-        </button>
-
-    </div>
+</div>
 
 </aside>
 
 
-<!-- =========================================================
-     SİTE
-========================================================= -->
-
 <div id="site">
 
+<!-- HEADER -->
 
-    <!-- HEADER -->
+<header>
 
-    <header>
+<div class="logo">
+Fırsat<span>Radar</span>
+</div>
 
-        <div class="logo">
-            Fırsat<span>Radar</span>
-        </div>
+<div class="search-box">
 
+<span class="search-icon">⌕</span>
 
-        <div class="search-box">
+<input
+id="searchInput"
+type="search"
+placeholder="Ürün veya kategori ara..."
+autocomplete="off"
+>
 
-            <span class="search-icon">
-                ⌕
-            </span>
+</div>
 
-            <input
-                id="searchInput"
-                type="search"
-                placeholder="Ürün veya kategori ara..."
-                autocomplete="off"
-            >
+<div class="header-links">
 
-        </div>
+<button id="aboutButton" type="button">
+Hakkımızda
+</button>
 
+<button id="contactButton" type="button">
+İletişim
+</button>
 
-        <button
-            id="themeToggle"
-            class="theme-toggle"
-            type="button"
-            aria-label="Tema değiştir"
-        >
+</div>
 
-            <span
-                id="themeSlider"
-                class="theme-slider"
-            >
-                ☀️
-            </span>
+<button
+id="themeToggle"
+class="theme-toggle"
+type="button"
+aria-label="Tema değiştir"
+>
 
-        </button>
+<span id="themeSlider" class="theme-slider">☀️</span>
 
-    </header>
+</button>
 
-
-    <!-- HERO -->
-
-    <section class="hero">
-
-        <div class="hero-content">
-
-            <h1>
-                En iyi fırsatları yakala.
-            </h1>
-
-            <p>
-                Güncel indirimleri keşfet,
-                ürünleri karşılaştır ve fırsatı kaçırma.
-            </p>
-
-        </div>
-
-    </section>
+</header>
 
 
-    <!-- SONUÇ -->
+<!-- HAKKIMIZDA -->
 
-    <div class="result-area">
+<div id="aboutOverlay" class="info-overlay">
 
-        <div class="result-bar">
+<div class="info-box">
 
-            <div
-                id="resultCount"
-                class="result-count"
-            >
-                Fırsatlar yükleniyor...
-            </div>
+<button
+class="info-close"
+type="button"
+data-close-info="aboutOverlay"
+>×</button>
 
-            <div
-                id="activeFilterText"
-                class="active-filter-text"
-            ></div>
+<h2>Hakkımızda</h2>
 
-        </div>
+<p>
+FırsatRadar, güncel ürün fırsatlarını tek bir yerde
+keşfetmeni sağlayan bir fırsat platformudur.
+Amacımız, farklı ürünlerdeki avantajlı fırsatları
+kolayca bulmanı ve incelemeni sağlamaktır.
+</p>
 
+</div>
 
-        <div class="control-row">
-
-            <div class="control-pill-wrap">
-
-                <button
-                    id="filterButton"
-                    class="control-pill filter-control-pill"
-                    type="button"
-                    aria-label="Filtreleri aç veya kapat"
-                >
-
-                    <span class="control-icon">
-                        ☷
-                    </span>
-
-                    <span>
-                        Filtrele
-                    </span>
-
-                    <span
-                        id="filterBadge"
-                        class="pill-badge"
-                    >
-                        0
-                    </span>
-
-                </button>
-
-            </div>
+</div>
 
 
-            <div class="control-pill-wrap">
+<!-- İLETİŞİM -->
 
-                <button
-                    id="sortButton"
-                    class="control-pill sort-control-pill"
-                    type="button"
-                    aria-expanded="false"
-                >
+<div id="contactOverlay" class="info-overlay">
 
-                    <span class="control-icon">
-                        ↕
-                    </span>
+<div class="info-box">
 
-                    <span>
-                        Sırala
-                    </span>
+<button
+class="info-close"
+type="button"
+data-close-info="contactOverlay"
+>×</button>
 
-                </button>
+<h2>İletişim</h2>
 
+<p>
+FırsatRadar hakkında öneri, hata bildirimi veya
+iş birliği taleplerin için bizimle iletişime geçebilirsin.
+</p>
 
-                <div
-                    id="sortMenu"
-                    class="sort-menu"
-                ></div>
+</div>
 
-            </div>
-
-        </div>
-
-    </div>
+</div>
 
 
-    <!-- ÜRÜNLER -->
+<!-- HERO -->
 
-    <main
-        id="deals"
-        class="deals"
-    ></main>
+<section class="hero">
+
+<div class="hero-content">
+
+<h1>En iyi fırsatları yakala.</h1>
+
+<p>
+Güncel indirimleri keşfet,
+ürünleri karşılaştır ve fırsatı kaçırma.
+</p>
+
+</div>
+
+</section>
 
 
-    <!-- FOOTER -->
+<!-- SONUÇ -->
 
-    <footer>
-        © 2026 FırsatRadar · Güncel fırsatları keşfet.
-    </footer>
+<div class="result-area">
+
+<div class="result-bar">
+
+<div id="resultCount" class="result-count">
+Fırsatlar yükleniyor...
+</div>
+
+<div id="activeFilterText" class="active-filter-text"></div>
+
+</div>
+
+<div class="control-row">
+
+<div class="control-pill-wrap">
+
+<button
+id="filterButton"
+class="control-pill filter-control-pill"
+type="button"
+aria-label="Filtreleri aç veya kapat"
+>
+
+<span class="control-icon">☷</span>
+
+<span>Filtrele</span>
+
+<span id="filterBadge" class="pill-badge">0</span>
+
+</button>
+
+</div>
+
+
+<div class="control-pill-wrap">
+
+<button
+id="sortButton"
+class="control-pill sort-control-pill"
+type="button"
+aria-expanded="false"
+>
+
+<span class="control-icon">↕</span>
+
+<span>Sırala</span>
+
+</button>
+
+<div id="sortMenu" class="sort-menu"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ÜRÜNLER -->
+
+<main id="deals" class="deals"></main>
+
+
+<!-- FOOTER -->
+
+<footer>
+© 2026 FırsatRadar · Güncel fırsatları keşfet.
+</footer>
 
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <script>
 
-    /* =========================================================
-       SUPABASE
-    ========================================================= */
+/* SUPABASE */
 
-    const SUPABASE_URL =
-    "https://plamxtngolhofgiwntij.supabase.co";
+const SUPABASE_URL =
+"https://plamxtngolhofgiwntij.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_DcVjC7SXJ5vHtIH57bkMiQ_wyak6kSt";
+"sb_publishable_DcVjC7SXJ5vHtIH57bkMiQ_wyak6kSt";
 
 const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-    /* =========================================================
-       ELEMENTLER
-    ========================================================= */
 
-    const filterDrawer =
-        document.getElementById("filterDrawer");
+/* ELEMENTLER */
 
-    const filterButton =
-        document.getElementById("filterButton");
+const filterDrawer =
+document.getElementById("filterDrawer");
 
-    const closeFilter =
-        document.getElementById("closeFilter");
+const filterButton =
+document.getElementById("filterButton");
 
-    const filterCategories =
-        document.getElementById("filterCategories");
+const closeFilter =
+document.getElementById("closeFilter");
 
-    const priceOptions =
-        document.getElementById("priceOptions");
+const filterCategories =
+document.getElementById("filterCategories");
 
-    const clearFilters =
-        document.getElementById("clearFilters");
+const priceOptions =
+document.getElementById("priceOptions");
 
-    const applyFilters =
-        document.getElementById("applyFilters");
+const clearFilters =
+document.getElementById("clearFilters");
 
-    const filterBadge =
-        document.getElementById("filterBadge");
+const applyFilters =
+document.getElementById("applyFilters");
 
-    const filterSummary =
-        document.getElementById("filterSummary");
+const filterBadge =
+document.getElementById("filterBadge");
 
-    const activeFilterText =
-        document.getElementById("activeFilterText");
+const filterSummary =
+document.getElementById("filterSummary");
 
-    const searchInput =
-        document.getElementById("searchInput");
+const activeFilterText =
+document.getElementById("activeFilterText");
 
-    const dealsContainer =
-        document.getElementById("deals");
+const searchInput =
+document.getElementById("searchInput");
 
-    const resultCount =
-        document.getElementById("resultCount");
+const dealsContainer =
+document.getElementById("deals");
 
-    const themeToggle =
-        document.getElementById("themeToggle");
-
-    const themeSlider =
-        document.getElementById("themeSlider");
-
-    const sortButton =
-        document.getElementById("sortButton");
-
-    const sortMenu =
-        document.getElementById("sortMenu");
-
-
-    /* =========================================================
-       DEĞİŞKENLER
-    ========================================================= */
-
-    let deals = [];
-
-    let selectedCategory = "Tümü";
-    let selectedPrice = "Tümü";
-
-    let draftCategory = "Tümü";
-    let draftPrice = "Tümü";
-
-    let selectedSort = "newest";
-
-
-    /* =========================================================
-       KATEGORİLER
-    ========================================================= */
-
-    const ALL_CATEGORIES = [
-
-        "Elektronik",
-        "Telefon",
-        "Bilgisayar",
-        "Tablet",
-        "Televizyon",
-        "Kulaklık",
-        "Akıllı Saat",
-        "Fotoğraf & Kamera",
-        "Oyun",
-        "Oyun Konsolu",
-        "Oyun Aksesuarları",
-        "Ev & Yaşam",
-        "Mutfak",
-        "Kişisel Bakım",
-        "Moda",
-        "Ayakkabı",
-        "Aksesuar",
-        "Otomobil",
-        "Oto Aksesuar",
-        "Spor & Outdoor",
-        "Kitap",
-        "Hobi",
-        "Oyuncak",
-        "Ofis & Kırtasiye",
-        "Anne & Bebek",
-        "Evcil Hayvan",
-        "Market",
-        "Diğer"
-
-    ];
-
-
-    /* =========================================================
-       FİYAT ARALIKLARI
-    ========================================================= */
-
-    const PRICE_RANGES = [
-
-        {
-            id: "Tümü",
-            label: "Tüm fiyatlar"
-        },
-
-        {
-            id: "0-500",
-            label: "0 – 500 TL",
-            min: 0,
-            max: 500
-        },
-
-        {
-            id: "500-1000",
-            label: "500 – 1.000 TL",
-            min: 500,
-            max: 1000
-        },
+const resultCount =
+document.getElementById("resultCount");
 
-        {
-            id: "1000-2500",
-            label: "1.000 – 2.500 TL",
-            min: 1000,
-            max: 2500
-        },
+const themeToggle =
+document.getElementById("themeToggle");
+
+const themeSlider =
+document.getElementById("themeSlider");
 
-        {
-            id: "2500-5000",
-            label: "2.500 – 5.000 TL",
-            min: 2500,
-            max: 5000
-        },
+const sortButton =
+document.getElementById("sortButton");
+
+const sortMenu =
+document.getElementById("sortMenu");
+
+
+/* DEĞİŞKENLER */
+
+let deals = [];
+
+let selectedCategory = "Tümü";
+let selectedPrice = "Tümü";
+
+let draftCategory = "Tümü";
+let draftPrice = "Tümü";
 
-        {
-            id: "5000-10000",
-            label: "5.000 – 10.000 TL",
-            min: 5000,
-            max: 10000
-        },
+let selectedSort = "newest";
 
-        {
-            id: "10000-25000",
-            label: "10.000 – 25.000 TL",
-            min: 10000,
-            max: 25000
-        },
 
-        {
-            id: "25000+",
-            label: "25.000 TL ve üzeri",
-            min: 25000
-        }
+/* KATEGORİLER */
 
-    ];
+const ALL_CATEGORIES = [
+"Elektronik",
+"Telefon",
+"Bilgisayar",
+"Tablet",
+"Televizyon",
+"Kulaklık",
+"Akıllı Saat",
+"Fotoğraf & Kamera",
+"Oyun",
+"Oyun Konsolu",
+"Oyun Aksesuarları",
+"Ev & Yaşam",
+"Mutfak",
+"Kişisel Bakım",
+"Moda",
+"Ayakkabı",
+"Aksesuar",
+"Otomobil",
+"Oto Aksesuar",
+"Spor & Outdoor",
+"Kitap",
+"Hobi",
+"Oyuncak",
+"Ofis & Kırtasiye",
+"Anne & Bebek",
+"Evcil Hayvan",
+"Market",
+"Diğer"
+];
+
+
+/* FİYAT ARALIKLARI */
+
+const PRICE_RANGES = [
+
+{
+id:"Tümü",
+label:"Tüm fiyatlar"
+},
+
+{
+id:"0-500",
+label:"0 – 500 TL",
+min:0,
+max:500
+},
 
+{
+id:"500-1000",
+label:"500 – 1.000 TL",
+min:500,
+max:1000
+},
 
-    /* =========================================================
-       SIRALAMA
-    ========================================================= */
+{
+id:"1000-2500",
+label:"1.000 – 2.500 TL",
+min:1000,
+max:2500
+},
 
-    const SORT_OPTIONS = [
+{
+id:"2500-5000",
+label:"2.500 – 5.000 TL",
+min:2500,
+max:5000
+},
 
-        {
-            id: "newest",
-            label: "🆕 En yeni"
-        },
+{
+id:"5000-10000",
+label:"5.000 – 10.000 TL",
+min:5000,
+max:10000
+},
 
-        {
-            id: "oldest",
-            label: "🕐 En eski"
-        },
+{
+id:"10000-25000",
+label:"10.000 – 25.000 TL",
+min:10000,
+max:25000
+},
 
-        {
-            id: "price-low",
-            label: "💰 Fiyat: Düşük → Yüksek"
-        },
+{
+id:"25000+",
+label:"25.000 TL ve üzeri",
+min:25000
+}
 
-        {
-            id: "price-high",
-            label: "💸 Fiyat: Yüksek → Düşük"
-        },
+];
 
-        {
-            id: "clicks",
-            label: "🔥 En çok tıklanan"
-        },
 
-        {
-            id: "name",
-            label: "🔤 A → Z"
-        }
+/* SIRALAMA */
 
-    ];
+const SORT_OPTIONS = [
 
+{
+id:"newest",
+label:"🆕 En yeni"
+},
 
-    /* =========================================================
-       TEMA
-    ========================================================= */
+{
+id:"oldest",
+label:"🕐 En eski"
+},
 
-    function loadTheme() {
+{
+id:"price-low",
+label:"💰 Fiyat: Düşük → Yüksek"
+},
 
-        const theme =
-            localStorage.getItem("fr_theme");
+{
+id:"price-high",
+label:"💸 Fiyat: Yüksek → Düşük"
+},
 
-        if (theme === "dark") {
+{
+id:"clicks",
+label:"🔥 En çok tıklanan"
+},
 
-            document.body.classList.add("dark");
+{
+id:"name",
+label:"🔤 A → Z"
+}
 
-            themeSlider.textContent = "🌙";
+];
 
-        } else {
 
-            document.body.classList.remove("dark");
+/* TEMA */
 
-            themeSlider.textContent = "☀️";
+function loadTheme(){
 
-        }
+const theme =
+localStorage.getItem("fr_theme");
 
-    }
+if(theme === "dark"){
 
+document.body.classList.add("dark");
+themeSlider.textContent="🌙";
 
-    themeToggle.addEventListener(
-        "click",
-        () => {
+}else{
 
-            document.body.classList.toggle("dark");
+document.body.classList.remove("dark");
+themeSlider.textContent="☀️";
 
-            const dark =
-                document.body.classList.contains("dark");
+}
 
-            localStorage.setItem(
-                "fr_theme",
-                dark ? "dark" : "light"
-            );
+}
 
-            themeSlider.textContent =
-                dark ? "🌙" : "☀️";
+themeToggle.addEventListener("click",()=>{
 
-        }
-    );
+document.body.classList.toggle("dark");
 
+const dark =
+document.body.classList.contains("dark");
 
-    loadTheme();
+localStorage.setItem(
+"fr_theme",
+dark ? "dark" : "light"
+);
 
+themeSlider.textContent =
+dark ? "🌙" : "☀️";
 
-    /* =========================================================
-       SIRALAMA
-    ========================================================= */
+});
 
-    function renderSortOptions() {
+loadTheme();
 
-        sortMenu.innerHTML = "";
 
-        SORT_OPTIONS.forEach(
-            option => {
+/* SIRALAMA */
 
-                const button =
-                    document.createElement("button");
+function renderSortOptions(){
 
-                button.type = "button";
+sortMenu.innerHTML="";
 
-                button.className =
-                    "sort-option" +
-                    (
-                        selectedSort === option.id
-                            ? " active"
-                            : ""
-                    );
+SORT_OPTIONS.forEach(option=>{
 
-                button.textContent =
-                    option.label;
+const button =
+document.createElement("button");
 
-                button.addEventListener(
-                    "click",
-                    () => {
+button.type="button";
 
-                        selectedSort =
-                            option.id;
+button.className =
+"sort-option" +
+(selectedSort === option.id ? " active" : "");
 
-                        closeSortMenu();
+button.textContent=option.label;
 
-                        renderDeals();
+button.addEventListener("click",()=>{
 
-                    }
-                );
+selectedSort=option.id;
 
-                sortMenu.appendChild(button);
+closeSortMenu();
 
-            }
-        );
+renderDeals();
 
-    }
+});
 
+sortMenu.appendChild(button);
 
-    function openSortMenu() {
+});
 
-        renderSortOptions();
+}
 
-        sortMenu.classList.add("open");
+function openSortMenu(){
 
-        sortButton.classList.add("active");
+renderSortOptions();
 
-        sortButton.setAttribute(
-            "aria-expanded",
-            "true"
-        );
+sortMenu.classList.add("open");
 
-    }
+sortButton.classList.add("active");
 
+sortButton.setAttribute(
+"aria-expanded",
+"true"
+);
 
-    function closeSortMenu() {
+}
 
-        sortMenu.classList.remove("open");
+function closeSortMenu(){
 
-        sortButton.classList.remove("active");
+sortMenu.classList.remove("open");
 
-        sortButton.setAttribute(
-            "aria-expanded",
-            "false"
-        );
+sortButton.classList.remove("active");
 
-    }
+sortButton.setAttribute(
+"aria-expanded",
+"false"
+);
 
+}
 
-    sortButton.addEventListener(
-        "click",
-        event => {
+sortButton.addEventListener("click",event=>{
 
-            event.stopPropagation();
+event.stopPropagation();
 
-            if (
-                sortMenu.classList.contains("open")
-            ) {
+if(sortMenu.classList.contains("open")){
+closeSortMenu();
+}else{
+openSortMenu();
+}
 
-                closeSortMenu();
+});
 
-            } else {
+document.addEventListener("click",event=>{
 
-                openSortMenu();
+if(
+!event.target.closest(".sort-control-pill") &&
+!event.target.closest("#sortMenu")
+){
+closeSortMenu();
+}
 
-            }
+});
 
-        }
-    );
 
+/* FİLTRE */
 
-    document.addEventListener(
-        "click",
-        event => {
+function openFilters(){
 
-            if (
-                !event.target.closest(
-                    ".sort-control-pill"
-                ) &&
-                !event.target.closest(
-                    "#sortMenu"
-                )
-            ) {
+closeSortMenu();
 
-                closeSortMenu();
+draftCategory=selectedCategory;
+draftPrice=selectedPrice;
 
-            }
+renderFilterOptions();
 
-        }
-    );
+filterDrawer.classList.add("open");
 
+filterDrawer.setAttribute(
+"aria-hidden",
+"false"
+);
 
-    /* =========================================================
-       FİLTRE
-    ========================================================= */
+document.body.classList.add("filter-open");
 
-    function openFilters() {
+}
 
-        closeSortMenu();
+function closeFilters(){
 
-        draftCategory =
-            selectedCategory;
+filterDrawer.classList.remove("open");
 
-        draftPrice =
-            selectedPrice;
+filterDrawer.setAttribute(
+"aria-hidden",
+"true"
+);
 
-        renderFilterOptions();
+document.body.classList.remove("filter-open");
 
-        filterDrawer.classList.add("open");
+}
 
-        filterDrawer.setAttribute(
-            "aria-hidden",
-            "false"
-        );
+filterButton.addEventListener("click",()=>{
 
-        document.body.classList.add(
-            "filter-open"
-        );
+if(filterDrawer.classList.contains("open")){
+closeFilters();
+}else{
+openFilters();
+}
 
-    }
+});
 
+closeFilter.addEventListener(
+"click",
+closeFilters
+);
 
-    function closeFilters() {
 
-        filterDrawer.classList.remove("open");
+/* KATEGORİLER */
 
-        filterDrawer.setAttribute(
-            "aria-hidden",
-            "true"
-        );
+function getAllCategories(){
 
-        document.body.classList.remove(
-            "filter-open"
-        );
+const categories=[...ALL_CATEGORIES];
 
-    }
+const existing=new Set(categories);
 
+deals.forEach(deal=>{
 
-    filterButton.addEventListener(
-        "click",
-        () => {
+const category=
+String(deal.category || "").trim();
 
-            if (
-                filterDrawer.classList.contains("open")
-            ) {
+if(category && !existing.has(category)){
 
-                closeFilters();
+categories.push(category);
+existing.add(category);
 
-            } else {
+}
 
-                openFilters();
+});
 
-            }
+return categories;
 
-        }
-    );
+}
 
 
-    closeFilter.addEventListener(
-        "click",
-        closeFilters
-    );
+/* FİLTRELER */
 
+function renderFilterOptions(){
 
-    /* =========================================================
-       KATEGORİLER
-    ========================================================= */
+filterCategories.innerHTML="";
 
-    function getAllCategories() {
+const categories=[
+"Tümü",
+...getAllCategories()
+];
 
-        const categories = [
-            ...ALL_CATEGORIES
-        ];
+categories.forEach(category=>{
 
-        const existing =
-            new Set(categories);
+const button =
+document.createElement("button");
 
-        deals.forEach(
-            deal => {
+button.type="button";
 
-                const category =
-                    String(
-                        deal.category || ""
-                    ).trim();
+button.className =
+"filter-option" +
+(draftCategory === category ? " active" : "");
 
-                if (
-                    category &&
-                    !existing.has(category)
-                ) {
+button.innerHTML=`
 
-                    categories.push(
-                        category
-                    );
+<span>${escapeHTML(category)}</span>
 
-                    existing.add(
-                        category
-                    );
+<span class="option-check">
+${draftCategory === category ? "✓" : ""}
+</span>
 
-                }
+`;
 
-            }
-        );
+button.addEventListener("click",()=>{
 
-        return categories;
+draftCategory=category;
 
-    }
+renderFilterOptions();
 
+});
 
-    /* =========================================================
-       FİLTRELER
-    ========================================================= */
+filterCategories.appendChild(button);
 
-    function renderFilterOptions() {
+});
 
-        filterCategories.innerHTML = "";
 
-        const categories = [
-            "Tümü",
-            ...getAllCategories()
-        ];
+priceOptions.innerHTML="";
 
-        categories.forEach(
-            category => {
+PRICE_RANGES.forEach(range=>{
 
-                const button =
-                    document.createElement("button");
+const button =
+document.createElement("button");
 
-                button.type = "button";
+button.type="button";
 
-                button.className =
-                    "filter-option" +
-                    (
-                        draftCategory === category
-                            ? " active"
-                            : ""
-                    );
+button.className =
+"filter-option" +
+(draftPrice === range.id ? " active" : "");
 
-                button.innerHTML = `
+button.innerHTML=`
 
-                    <span>
-                        ${escapeHTML(category)}
-                    </span>
+<span>${escapeHTML(range.label)}</span>
 
-                    <span class="option-check">
-                        ${
-                            draftCategory === category
-                                ? "✓"
-                                : ""
-                        }
-                    </span>
+<span class="option-check">
+${draftPrice === range.id ? "✓" : ""}
+</span>
 
-                `;
+`;
 
-                button.addEventListener(
-                    "click",
-                    () => {
+button.addEventListener("click",()=>{
 
-                        draftCategory =
-                            category;
+draftPrice=range.id;
 
-                        renderFilterOptions();
+renderFilterOptions();
 
-                    }
-                );
+});
 
-                filterCategories.appendChild(
-                    button
-                );
+priceOptions.appendChild(button);
 
-            }
-        );
+});
 
+}
 
-        priceOptions.innerHTML = "";
 
-        PRICE_RANGES.forEach(
-            range => {
+/* FİLTRE UYGULA */
 
-                const button =
-                    document.createElement("button");
+applyFilters.addEventListener("click",()=>{
 
-                button.type = "button";
+selectedCategory=draftCategory;
+selectedPrice=draftPrice;
 
-                button.className =
-                    "filter-option" +
-                    (
-                        draftPrice === range.id
-                            ? " active"
-                            : ""
-                    );
+updateFilterUI();
+renderDeals();
+closeFilters();
 
-                button.innerHTML = `
+});
 
-                    <span>
-                        ${escapeHTML(range.label)}
-                    </span>
 
-                    <span class="option-check">
-                        ${
-                            draftPrice === range.id
-                                ? "✓"
-                                : ""
-                        }
-                    </span>
+/* TEMİZLE */
 
-                `;
+clearFilters.addEventListener("click",()=>{
 
-                button.addEventListener(
-                    "click",
-                    () => {
+draftCategory="Tümü";
+draftPrice="Tümü";
 
-                        draftPrice =
-                            range.id;
+selectedCategory="Tümü";
+selectedPrice="Tümü";
 
-                        renderFilterOptions();
+renderFilterOptions();
+updateFilterUI();
+renderDeals();
 
-                    }
-                );
+});
 
-                priceOptions.appendChild(
-                    button
-                );
 
-            }
-        );
+/* FİLTRE BİLGİSİ */
 
-    }
+function updateFilterUI(){
 
+let count=0;
 
-    /* =========================================================
-       FİLTRE UYGULA
-    ========================================================= */
+if(selectedCategory !== "Tümü") count++;
 
-    applyFilters.addEventListener(
-        "click",
-        () => {
+if(selectedPrice !== "Tümü") count++;
 
-            selectedCategory =
-                draftCategory;
+if(count>0){
 
-            selectedPrice =
-                draftPrice;
+filterBadge.textContent=count;
+filterBadge.classList.add("show");
 
-            updateFilterUI();
+}else{
 
-            renderDeals();
+filterBadge.classList.remove("show");
 
-            closeFilters();
+}
 
-        }
-    );
+const parts=[];
 
+if(selectedCategory !== "Tümü"){
+parts.push(selectedCategory);
+}
 
-    /* =========================================================
-       TEMİZLE
-    ========================================================= */
+if(selectedPrice !== "Tümü"){
 
-    clearFilters.addEventListener(
-        "click",
-        () => {
+const range =
+PRICE_RANGES.find(
+item=>item.id === selectedPrice
+);
 
-            draftCategory = "Tümü";
-            draftPrice = "Tümü";
+if(range) parts.push(range.label);
 
-            selectedCategory = "Tümü";
-            selectedPrice = "Tümü";
+}
 
-            renderFilterOptions();
+filterSummary.textContent =
+parts.length
+? parts.join(" • ")
+: "Tüm fırsatlar";
 
-            updateFilterUI();
+activeFilterText.textContent =
+parts.length
+? "Filtre: " + parts.join(" • ")
+: "";
 
-            renderDeals();
+}
 
-        }
-    );
 
+/* FİYAT */
 
-    /* =========================================================
-       FİLTRE BİLGİSİ
-    ========================================================= */
+function priceToNumber(value){
 
-    function updateFilterUI() {
+if(
+value === null ||
+value === undefined ||
+value === ""
+){
+return null;
+}
 
-        let count = 0;
+if(typeof value === "number"){
+return isFinite(value) ? value : null;
+}
 
-        if (
-            selectedCategory !== "Tümü"
-        ) {
+let text=
+String(value)
+.replace(/\s/g,"")
+.replace(/TL/gi,"")
+.replace(/₺/g,"")
+.trim();
 
-            count++;
+if(!text)return null;
 
-        }
+text=text.replace(/[^\d.,-]/g,"");
 
-        if (
-            selectedPrice !== "Tümü"
-        ) {
+if(text.includes(".") && text.includes(",")){
 
-            count++;
+text=text.replace(/\./g,"").replace(",", ".");
 
-        }
+}else if(text.includes(",")){
 
-        if (count > 0) {
+const parts=text.split(",");
 
-            filterBadge.textContent =
-                count;
+if(parts.length===2 && parts[1].length<=2){
 
-            filterBadge.classList.add(
-                "show"
-            );
+text=parts[0]+"."+parts[1];
 
-        } else {
+}else{
 
-            filterBadge.classList.remove(
-                "show"
-            );
+text=text.replace(/,/g,"");
 
-        }
+}
 
-        const parts = [];
+}else if(text.includes(".")){
 
-        if (
-            selectedCategory !== "Tümü"
-        ) {
+const parts=text.split(".");
 
-            parts.push(
-                selectedCategory
-            );
+if(
+parts.length>2 ||
+(parts.length===2 && parts[1].length===3)
+){
 
-        }
+text=text.replace(/\./g,"");
 
-        if (
-            selectedPrice !== "Tümü"
-        ) {
+}
 
-            const range =
-                PRICE_RANGES.find(
-                    item =>
-                        item.id === selectedPrice
-                );
+}
 
-            if (range) {
+const number=parseFloat(text);
 
-                parts.push(
-                    range.label
-                );
+return isFinite(number) ? number : null;
 
-            }
+}
 
-        }
+function getDealPrice(deal){
 
-        filterSummary.textContent =
-            parts.length
-                ? parts.join(" • ")
-                : "Tüm fırsatlar";
+return priceToNumber(
+deal.new_price ??
+deal.price ??
+deal.current_price ??
+deal.sale_price
+);
 
-        activeFilterText.textContent =
-            parts.length
-                ? "Filtre: " +
-                  parts.join(" • ")
-                : "";
+}
 
-    }
+function formatPrice(value){
 
+const number=priceToNumber(value);
 
-    /* =========================================================
-       FİYAT
-    ========================================================= */
+if(number===null)return "";
 
-    function priceToNumber(value) {
+return new Intl.NumberFormat(
+"tr-TR",
+{
+minimumFractionDigits:0,
+maximumFractionDigits:2
+}
+).format(number)+" TL";
 
-        if (
-            value === null ||
-            value === undefined ||
-            value === ""
-        ) {
+}
 
-            return null;
+function isInPriceRange(price,rangeId){
 
-        }
+if(rangeId==="Tümü")return true;
 
-        if (
-            typeof value === "number"
-        ) {
+if(price===null)return false;
 
-            return isFinite(value)
-                ? value
-                : null;
+const range =
+PRICE_RANGES.find(
+item=>item.id===rangeId
+);
 
-        }
+if(!range)return true;
 
-        let text =
-            String(value)
-                .replace(/\s/g, "")
-                .replace(/TL/gi, "")
-                .replace(/₺/g, "")
-                .trim();
+if(rangeId==="25000+"){
+return price>=25000;
+}
 
-        if (!text) {
+if(rangeId==="0-500"){
+return price>=0 && price<=500;
+}
 
-            return null;
+return price>range.min && price<=range.max;
 
-        }
+}
 
-        text =
-            text.replace(
-                /[^\d.,-]/g,
-                ""
-            );
 
-        if (
-            text.includes(".") &&
-            text.includes(",")
-        ) {
+/* İNDİRİM */
 
-            text =
-                text
-                    .replace(/\./g, "")
-                    .replace(",", ".");
+function calculateDiscount(oldPrice,newPrice){
 
-        } else if (
-            text.includes(",")
-        ) {
+const oldValue=priceToNumber(oldPrice);
+const newValue=priceToNumber(newPrice);
 
-            const parts =
-                text.split(",");
+if(
+oldValue===null ||
+newValue===null ||
+oldValue<=0 ||
+newValue>=oldValue
+){
+return "";
+}
 
-            if (
-                parts.length === 2 &&
-                parts[1].length <= 2
-            ) {
+const discount=Math.round(
+((oldValue-newValue)/oldValue)*100
+);
 
-                text =
-                    parts[0] +
-                    "." +
-                    parts[1];
+return "%"+discount;
 
-            } else {
+}
 
-                text =
-                    text.replace(
-                        /,/g,
-                        ""
-                    );
 
-            }
+/* URL */
 
-        } else if (
-            text.includes(".")
-        ) {
+function safeURL(url){
 
-            const parts =
-                text.split(".");
+try{
 
-            if (
-                parts.length > 2 ||
-                (
-                    parts.length === 2 &&
-                    parts[1].length === 3
-                )
-            ) {
+const parsed=new URL(url);
 
-                text =
-                    text.replace(
-                        /\./g,
-                        ""
-                    );
+if(
+parsed.protocol!=="http:" &&
+parsed.protocol!=="https:"
+){
+return null;
+}
 
-            }
+return parsed.href;
 
-        }
+}catch{
 
-        const number =
-            parseFloat(text);
+return null;
 
-        return isFinite(number)
-            ? number
-            : null;
+}
 
-    }
+}
 
 
-    function getDealPrice(deal) {
+/* HTML GÜVENLİĞİ */
 
-        return priceToNumber(
-            deal.new_price ??
-            deal.price ??
-            deal.current_price ??
-            deal.sale_price
-        );
+function escapeHTML(value){
 
-    }
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
+}
 
-    function formatPrice(value) {
 
-        const number =
-            priceToNumber(value);
+/* TARİH */
 
-        if (number === null) {
+function formatDate(date){
 
-            return "";
+if(!date)return "";
 
-        }
+const d=new Date(date);
 
-        return new Intl.NumberFormat(
-            "tr-TR",
-            {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }
-        ).format(number) + " TL";
+if(isNaN(d.getTime()))return "";
 
-    }
+return d.toLocaleDateString("tr-TR");
 
+}
 
-    function isInPriceRange(
-        price,
-        rangeId
-    ) {
 
-        if (
-            rangeId === "Tümü"
-        ) {
+/* FİLTRELENMİŞ ÜRÜNLER */
 
-            return true;
+function getFilteredDeals(){
 
-        }
+const search=
+searchInput.value
+.trim()
+.toLocaleLowerCase("tr-TR");
 
-        if (
-            price === null
-        ) {
+return deals.filter(deal=>{
 
-            return false;
+if(search){
 
-        }
+const title=
+String(
+deal.title ||
+deal.name ||
+""
+)
+.toLocaleLowerCase("tr-TR");
 
-        const range =
-            PRICE_RANGES.find(
-                item =>
-                    item.id === rangeId
-            );
+const category=
+String(
+deal.category ||
+""
+)
+.toLocaleLowerCase("tr-TR");
 
-        if (!range) {
+if(
+!title.includes(search) &&
+!category.includes(search)
+){
+return false;
+}
 
-            return true;
+}
 
-        }
+if(selectedCategory!=="Tümü"){
 
-        if (
-            rangeId === "25000+"
-        ) {
+const category=
+String(
+deal.category || ""
+).trim();
 
-            return price >= 25000;
+if(category!==selectedCategory){
+return false;
+}
 
-        }
+}
 
-        if (
-            rangeId === "0-500"
-        ) {
+if(selectedPrice!=="Tümü"){
 
-            return (
-                price >= 0 &&
-                price <= 500
-            );
+const price=getDealPrice(deal);
 
-        }
+if(
+!isInPriceRange(
+price,
+selectedPrice
+)
+){
+return false;
+}
 
-        return (
-            price > range.min &&
-            price <= range.max
-        );
+}
 
-    }
+return true;
 
+});
 
-    /* =========================================================
-       İNDİRİM
-    ========================================================= */
+}
 
-    function calculateDiscount(
-        oldPrice,
-        newPrice
-    ) {
 
-        const oldValue =
-            priceToNumber(oldPrice);
+/* SIRALAMA */
 
-        const newValue =
-            priceToNumber(newPrice);
+function sortDeals(list){
 
-        if (
-            oldValue === null ||
-            newValue === null ||
-            oldValue <= 0 ||
-            newValue >= oldValue
-        ) {
+const sorted=[...list];
 
-            return "";
+if(selectedSort==="newest"){
 
-        }
+sorted.sort(
+(a,b)=>
+new Date(b.created_at || 0) -
+new Date(a.created_at || 0)
+);
 
-        const discount =
-            Math.round(
-                (
-                    (oldValue - newValue) /
-                    oldValue
-                ) * 100
-            );
+}else if(selectedSort==="oldest"){
 
-        return "%" + discount;
+sorted.sort(
+(a,b)=>
+new Date(a.created_at || 0) -
+new Date(b.created_at || 0)
+);
 
-    }
+}else if(selectedSort==="price-low"){
 
+sorted.sort((a,b)=>{
 
-    /* =========================================================
-       URL
-    ========================================================= */
+const pa=getDealPrice(a);
+const pb=getDealPrice(b);
 
-    function safeURL(url) {
+if(pa===null && pb===null)return 0;
+if(pa===null)return 1;
+if(pb===null)return -1;
 
-        try {
+return pa-pb;
 
-            const parsed =
-                new URL(url);
+});
 
-            if (
-                parsed.protocol !== "http:" &&
-                parsed.protocol !== "https:"
-            ) {
+}else if(selectedSort==="price-high"){
 
-                return null;
+sorted.sort((a,b)=>{
 
-            }
+const pa=getDealPrice(a);
+const pb=getDealPrice(b);
 
-            return parsed.href;
+if(pa===null && pb===null)return 0;
+if(pa===null)return 1;
+if(pb===null)return -1;
 
-        } catch {
+return pb-pa;
 
-            return null;
+});
 
-        }
+}else if(selectedSort==="clicks"){
 
-    }
+sorted.sort((a,b)=>{
 
+const aClicks=Number(
+a.click_count ??
+a.clicks ??
+0
+);
 
-    /* =========================================================
-       HTML GÜVENLİĞİ
-    ========================================================= */
+const bClicks=Number(
+b.click_count ??
+b.clicks ??
+0
+);
 
-    function escapeHTML(value) {
+return bClicks-aClicks;
 
-        return String(
-            value ?? ""
-        )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+});
 
-    }
+}else if(selectedSort==="name"){
 
+sorted.sort((a,b)=>{
 
-    /* =========================================================
-       TARİH
-    ========================================================= */
+const aName=String(
+a.title ||
+a.name ||
+""
+);
 
-    function formatDate(date) {
+const bName=String(
+b.title ||
+b.name ||
+""
+);
 
-        if (!date) {
+return aName.localeCompare(
+bName,
+"tr",
+{
+sensitivity:"base"
+}
+);
 
-            return "";
+});
 
-        }
+}
 
-        const d =
-            new Date(date);
+return sorted;
 
-        if (
-            isNaN(d.getTime())
-        ) {
+}
 
-            return "";
 
-        }
+/* SIRALAMA BUTONU */
 
-        return d.toLocaleDateString(
-            "tr-TR"
-        );
+function updateSortButton(){
 
-    }
+sortButton.innerHTML=`
 
+<span class="control-icon">↕</span>
 
-    /* =========================================================
-       FİLTRELENMİŞ ÜRÜNLER
-    ========================================================= */
+<span>Sırala</span>
 
-    function getFilteredDeals() {
+`;
 
-        const search =
-            searchInput.value
-                .trim()
-                .toLocaleLowerCase(
-                    "tr-TR"
-                );
+}
 
-        return deals.filter(
-            deal => {
 
-                if (search) {
+/* ÜRÜNLER */
 
-                    const title =
-                        String(
-                            deal.title ||
-                            deal.name ||
-                            ""
-                        )
-                        .toLocaleLowerCase(
-                            "tr-TR"
-                        );
+function renderDeals(){
 
-                    const category =
-                        String(
-                            deal.category ||
-                            ""
-                        )
-                        .toLocaleLowerCase(
-                            "tr-TR"
-                        );
+const filtered=getFilteredDeals();
 
-                    if (
-                        !title.includes(search) &&
-                        !category.includes(search)
-                    ) {
+const sorted=sortDeals(filtered);
 
-                        return false;
+resultCount.textContent=
+`${sorted.length} fırsat gösteriliyor`;
 
-                    }
+dealsContainer.innerHTML="";
 
-                }
+if(sorted.length===0){
 
-                if (
-                    selectedCategory !== "Tümü"
-                ) {
+dealsContainer.innerHTML=`
 
-                    const category =
-                        String(
-                            deal.category ||
-                            ""
-                        ).trim();
+<div class="empty">
 
-                    if (
-                        category !==
-                        selectedCategory
-                    ) {
+<div class="empty-icon">🔎</div>
 
-                        return false;
+<h2>Fırsat bulunamadı</h2>
 
-                    }
+<p>
+Arama veya filtre seçeneklerini değiştirip tekrar deneyebilirsin.
+</p>
 
-                }
+</div>
 
-                if (
-                    selectedPrice !== "Tümü"
-                ) {
+`;
 
-                    const price =
-                        getDealPrice(deal);
+return;
 
-                    if (
-                        !isInPriceRange(
-                            price,
-                            selectedPrice
-                        )
-                    ) {
+}
 
-                        return false;
+sorted.forEach(deal=>{
 
-                    }
+dealsContainer.appendChild(
+createDealCard(deal)
+);
 
-                }
+});
 
-                return true;
+}
 
-            }
-        );
 
-    }
+/* ÜRÜN KARTI */
 
+function createDealCard(deal){
 
-    /* =========================================================
-       SIRALAMA
-    ========================================================= */
+const card=
+document.createElement("article");
 
-    function sortDeals(list) {
+card.className="deal-card";
 
-        const sorted =
-            [...list];
+const title=
+deal.title ||
+deal.name ||
+"İsimsiz ürün";
 
-        if (
-            selectedSort === "newest"
-        ) {
+const image=
+safeURL(
+deal.image_url ||
+deal.image ||
+""
+);
 
-            sorted.sort(
-                (a, b) =>
-                    new Date(
-                        b.created_at || 0
-                    ) -
-                    new Date(
-                        a.created_at || 0
-                    )
-            );
+const oldPrice=deal.old_price;
 
-        } else if (
-            selectedSort === "oldest"
-        ) {
+const newPrice=
+deal.new_price ??
+deal.price;
 
-            sorted.sort(
-                (a, b) =>
-                    new Date(
-                        a.created_at || 0
-                    ) -
-                    new Date(
-                        b.created_at || 0
-                    )
-            );
+const discount=
+calculateDiscount(
+oldPrice,
+newPrice
+);
 
-        } else if (
-            selectedSort === "price-low"
-        ) {
+const clickCount=
+Number(
+deal.click_count ??
+deal.clicks ??
+0
+);
 
-            sorted.sort(
-                (a, b) => {
+const imageHTML=
+image
+? `
 
-                    const pa =
-                        getDealPrice(a);
+<img
+class="deal-image"
+src="${escapeHTML(image)}"
+alt="${escapeHTML(title)}"
+loading="lazy"
+onerror="this.style.display='none'"
+>
 
-                    const pb =
-                        getDealPrice(b);
+`
+: `
 
-                    if (
-                        pa === null &&
-                        pb === null
-                    ) {
+<div style="
+color:var(--muted);
+font-size:13px;
+">
+Görsel yok
+</div>
 
-                        return 0;
+`;
 
-                    }
+card.innerHTML=`
 
-                    if (
-                        pa === null
-                    ) {
+<div class="deal-image-wrap">
 
-                        return 1;
+${imageHTML}
 
-                    }
+<span class="category-tag">
+${escapeHTML(
+deal.category ||
+"Diğer"
+)}
+</span>
 
-                    if (
-                        pb === null
-                    ) {
+</div>
 
-                        return -1;
 
-                    }
+<div class="deal-content">
 
-                    return pa - pb;
+<div class="deal-title">
+${escapeHTML(title)}
+</div>
 
-                }
-            );
 
-        } else if (
-            selectedSort === "price-high"
-        ) {
+${
+discount
+? `
 
-            sorted.sort(
-                (a, b) => {
+<div class="discount">
+${discount} indirim
+</div>
 
-                    const pa =
-                        getDealPrice(a);
+`
+: ""
+}
 
-                    const pb =
-                        getDealPrice(b);
 
-                    if (
-                        pa === null &&
-                        pb === null
-                    ) {
+<div class="prices">
 
-                        return 0;
+${
+oldPrice
+? `
 
-                    }
+<span class="old-price">
+${formatPrice(oldPrice)}
+</span>
 
-                    if (
-                        pa === null
-                    ) {
+`
+: ""
+}
 
-                        return 1;
+<span class="new-price">
 
-                    }
+${
+formatPrice(newPrice) ||
+"Fiyat bilgisi yok"
+}
 
-                    if (
-                        pb === null
-                    ) {
+</span>
 
-                        return -1;
+</div>
 
-                    }
 
-                    return pb - pa;
+<div class="deal-meta">
 
-                }
-            );
+<span>
+👆 ${clickCount} tıklama
+</span>
 
-        } else if (
-            selectedSort === "clicks"
-        ) {
+${
+deal.created_at
+? `
 
-            sorted.sort(
-                (a, b) => {
+<span>
+${formatDate(deal.created_at)}
+</span>
 
-                    const aClicks =
-                        Number(
-                            a.click_count ??
-                            a.clicks ??
-                            0
-                        );
+`
+: ""
+}
 
-                    const bClicks =
-                        Number(
-                            b.click_count ??
-                            b.clicks ??
-                            0
-                        );
+</div>
 
-                    return bClicks - aClicks;
 
-                }
-            );
+<div class="deal-actions">
 
-        } else if (
-            selectedSort === "name"
-        ) {
+<button
+class="deal-button"
+type="button"
+>
+Amazon’da Gör →
+</button>
 
-            sorted.sort(
-                (a, b) => {
+<button
+class="share-button"
+type="button"
+aria-label="Fırsatı paylaş"
+title="Paylaş"
+>
+↗
+</button>
 
-                    const aName =
-                        String(
-                            a.title ||
-                            a.name ||
-                            ""
-                        );
+</div>
 
-                    const bName =
-                        String(
-                            b.title ||
-                            b.name ||
-                            ""
-                        );
+</div>
 
-                    return aName.localeCompare(
-                        bName,
-                        "tr",
-                        {
-                            sensitivity:
-                                "base"
-                        }
-                    );
+`;
 
-                }
-            );
 
-        }
+const button=
+card.querySelector(".deal-button");
 
-        return sorted;
+button.addEventListener(
+"click",
+()=>openDeal(deal)
+);
 
-    }
 
+const shareButton=
+card.querySelector(".share-button");
 
-    /* =========================================================
-       SIRALAMA BUTONU
-    ========================================================= */
+shareButton.addEventListener(
+"click",
+event=>{
 
-    function updateSortButton() {
+event.stopPropagation();
 
-        sortButton.innerHTML = `
+shareDeal(deal);
 
-            <span class="control-icon">
-                ↕
-            </span>
+}
+);
 
-            <span>
-                Sırala
-            </span>
+return card;
 
-        `;
+}
 
-    }
 
+/* FIRSATA GİT */
 
-    /* =========================================================
-       ÜRÜNLER
-    ========================================================= */
+async function openDeal(deal){
 
-    function renderDeals() {
+const link=
+safeURL(
+deal.affiliate_url ||
+deal.product_url ||
+deal.url ||
+""
+);
 
-        const filtered =
-            getFilteredDeals();
+if(!link){
 
-        const sorted =
-            sortDeals(filtered);
+alert(
+"Bu fırsatın bağlantısı geçerli değil."
+);
 
-        resultCount.textContent =
-            `${sorted.length} fırsat gösteriliyor`;
+return;
 
-        dealsContainer.innerHTML = "";
+}
 
-        if (
-            sorted.length === 0
-        ) {
+try{
 
-            dealsContainer.innerHTML = `
+await supabaseClient.rpc(
+"increment_deal_click",
+{
+deal_id:deal.id
+}
+);
 
-                <div class="empty">
+}catch(error){
 
-                    <div class="empty-icon">
-                        🔎
-                    </div>
+console.warn(
+"Tıklama sayacı güncellenemedi:",
+error
+);
 
-                    <h2>
-                        Fırsat bulunamadı
-                    </h2>
+}
 
-                    <p>
-                        Arama veya filtre seçeneklerini değiştirip tekrar deneyebilirsin.
-                    </p>
+window.open(
+link,
+"_blank",
+"noopener,noreferrer"
+);
 
-                </div>
+}
 
-            `;
 
-            return;
+/* PAYLAŞ */
 
-        }
+async function shareDeal(deal){
 
-        sorted.forEach(
-            deal => {
+const title=
+deal.title ||
+deal.name ||
+"Fırsat";
 
-                dealsContainer.appendChild(
-                    createDealCard(deal)
-                );
+const link=
+safeURL(
+deal.affiliate_url ||
+deal.product_url ||
+deal.url ||
+""
+);
 
-            }
-        );
+if(!link){
 
-    }
+alert(
+"Bu fırsatın bağlantısı geçerli değil."
+);
 
+return;
 
-    /* =========================================================
-       ÜRÜN KARTI
-    ========================================================= */
+}
 
-    function createDealCard(deal) {
+const shareData={
+title:title,
+text:`${title} - FırsatRadar'da fırsatı yakala!`,
+url:link
+};
 
-        const card =
-            document.createElement(
-                "article"
-            );
 
-        card.className =
-            "deal-card";
+/* Telefon / destekleyen tarayıcı */
 
-        const title =
-            deal.title ||
-            deal.name ||
-            "İsimsiz ürün";
+if(
+navigator.share
+){
 
-        const image =
-            safeURL(
-                deal.image_url ||
-                deal.image ||
-                ""
-            );
+try{
 
-        const oldPrice =
-            deal.old_price;
+await navigator.share(
+shareData
+);
 
-        const newPrice =
-            deal.new_price ??
-            deal.price;
+}catch(error){
 
-        const discount =
-            calculateDiscount(
-                oldPrice,
-                newPrice
-            );
+if(
+error &&
+error.name!=="AbortError"
+){
 
-        const clickCount =
-            Number(
-                deal.click_count ??
-                deal.clicks ??
-                0
-            );
+console.warn(
+"Paylaşım başarısız:",
+error
+);
 
-        const imageHTML =
-            image
-                ? `
+}
 
-                    <img
-                        class="deal-image"
-                        src="${escapeHTML(image)}"
-                        alt="${escapeHTML(title)}"
-                        loading="lazy"
-                        onerror="this.style.display='none'"
-                    >
+}
 
-                `
-                : `
+return;
 
-                    <div style="
-                        color:var(--muted);
-                        font-size:13px;
-                    ">
-                        Görsel yok
-                    </div>
+}
 
-                `;
 
-        card.innerHTML = `
+/* Bilgisayar / desteklenmeyen tarayıcı */
 
-            <div class="deal-image-wrap">
+try{
 
-                ${imageHTML}
+await navigator.clipboard.writeText(
+link
+);
 
-                <span class="category-tag">
-                    ${escapeHTML(
-                        deal.category ||
-                        "Diğer"
-                    )}
-                </span>
+alert(
+"Fırsat bağlantısı kopyalandı."
+);
 
-            </div>
+}catch{
 
+window.prompt(
+"Fırsat bağlantısını kopyala:",
+link
+);
 
-            <div class="deal-content">
+}
 
-                <div class="deal-title">
-                    ${escapeHTML(title)}
-                </div>
+}
 
 
-                ${
-                    discount
-                        ? `
+/* ARAMA */
 
-                            <div class="discount">
-                                ${discount} indirim
-                            </div>
+searchInput.addEventListener(
+"input",
+()=>{
+renderDeals();
+}
+);
 
-                        `
-                        : ""
-                }
 
+/* SUPABASE VERİLERİ */
 
-                <div class="prices">
+async function loadDeals(){
 
-                    ${
-                        oldPrice
-                            ? `
+resultCount.textContent=
+"Fırsatlar yükleniyor...";
 
-                                <span class="old-price">
-                                    ${formatPrice(
-                                        oldPrice
-                                    )}
-                                </span>
+const {
+data,
+error
+}=
+await supabaseClient
+.from("deals")
+.select("*")
+.eq(
+"published",
+true
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
 
-                            `
-                            : ""
-                    }
+if(error){
 
+console.error(
+"Deals yüklenemedi:",
+error
+);
 
-                    <span class="new-price">
+resultCount.textContent=
+"Fırsatlar yüklenemedi";
 
-                        ${
-                            formatPrice(
-                                newPrice
-                            ) ||
-                            "Fiyat bilgisi yok"
-                        }
+dealsContainer.innerHTML=`
 
-                    </span>
+<div class="empty">
 
-                </div>
+<div class="empty-icon">⚠️</div>
 
+<h2>Fırsatlar yüklenemedi</h2>
 
-                <div class="deal-meta">
+<p>
+Bir sorun oluştu. Sayfayı yenileyip tekrar deneyebilirsin.
+</p>
 
-                    <span>
-                        👆 ${clickCount} tıklama
-                    </span>
+</div>
 
+`;
 
-                    ${
-                        deal.created_at
-                            ? `
+return;
 
-                                <span>
-                                    ${formatDate(
-                                        deal.created_at
-                                    )}
-                                </span>
+}
 
-                            `
-                            : ""
-                    }
+deals=
+Array.isArray(data)
+? data
+: [];
 
-                </div>
+renderFilterOptions();
 
+updateFilterUI();
 
-                <button
-                    class="deal-button"
-                    type="button"
-                >
-                    Fırsata Git →
-                </button>
+updateSortButton();
 
-            </div>
+renderDeals();
 
-        `;
+}
 
 
-        const button =
-            card.querySelector(
-                ".deal-button"
-            );
+/* ZİYARET */
 
-        button.addEventListener(
-            "click",
-            () => openDeal(deal)
-        );
+async function trackVisit(){
 
-        return card;
+try{
 
-    }
+await supabaseClient
+.from("site_visits")
+.insert([
+{
+visited_at:
+new Date().toISOString()
+}
+]);
 
+}catch(error){
 
-    /* =========================================================
-       FIRSATA GİT
-    ========================================================= */
+console.warn(
+"Ziyaret kaydedilemedi:",
+error
+);
 
-    async function openDeal(deal) {
+}
 
-        const link =
-            safeURL(
-                deal.affiliate_url ||
-                deal.product_url ||
-                deal.url ||
-                ""
-            );
+}
 
-        if (!link) {
 
-            alert(
-                "Bu fırsatın bağlantısı geçerli değil."
-            );
+/* HAKKIMIZDA / İLETİŞİM */
 
-            return;
+const aboutButton=
+document.getElementById(
+"aboutButton"
+);
 
-        }
+const contactButton=
+document.getElementById(
+"contactButton"
+);
 
-        try {
+const aboutOverlay=
+document.getElementById(
+"aboutOverlay"
+);
 
-            await supabaseClient.rpc(
-                "increment_deal_click",
-                {
-                    deal_id:
-                        deal.id
-                }
-            );
+const contactOverlay=
+document.getElementById(
+"contactOverlay"
+);
 
-        } catch (error) {
 
-            console.warn(
-                "Tıklama sayacı güncellenemedi:",
-                error
-            );
+aboutButton.addEventListener(
+"click",
+()=>{
+aboutOverlay.classList.add("open");
+}
+);
 
-        }
 
-        window.open(
-            link,
-            "_blank",
-            "noopener,noreferrer"
-        );
+contactButton.addEventListener(
+"click",
+()=>{
+contactOverlay.classList.add("open");
+}
+);
 
-    }
 
+document.querySelectorAll(
+"[data-close-info]"
+).forEach(button=>{
 
-    /* =========================================================
-       ARAMA
-    ========================================================= */
+button.addEventListener(
+"click",
+()=>{
 
-    searchInput.addEventListener(
-        "input",
-        () => {
+const id=
+button.dataset.closeInfo;
 
-            renderDeals();
+document
+.getElementById(id)
+.classList.remove("open");
 
-        }
-    );
+}
+);
 
+});
 
-    /* =========================================================
-       SUPABASE VERİLERİ
-    ========================================================= */
 
-    async function loadDeals() {
+[aboutOverlay,contactOverlay].forEach(
+overlay=>{
 
-        resultCount.textContent =
-            "Fırsatlar yükleniyor...";
+overlay.addEventListener(
+"click",
+event=>{
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("deals")
-                .select("*")
-                .eq(
-                    "published",
-                    true
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+if(event.target===overlay){
 
-        if (error) {
+overlay.classList.remove(
+"open"
+);
 
-            console.error(
-                "Deals yüklenemedi:",
-                error
-            );
+}
 
-            resultCount.textContent =
-                "Fırsatlar yüklenemedi";
+}
+);
 
-            dealsContainer.innerHTML = `
+});
 
-                <div class="empty">
 
-                    <div class="empty-icon">
-                        ⚠️
-                    </div>
+document.addEventListener(
+"keydown",
+event=>{
 
-                    <h2>
-                        Fırsatlar yüklenemedi
-                    </h2>
+if(event.key==="Escape"){
 
-                    <p>
-                        Bir sorun oluştu. Sayfayı yenileyip tekrar deneyebilirsin.
-                    </p>
+aboutOverlay.classList.remove(
+"open"
+);
 
-                </div>
+contactOverlay.classList.remove(
+"open"
+);
 
-            `;
+}
 
-            return;
+}
+);
 
-        }
 
-        deals =
-            Array.isArray(data)
-                ? data
-                : [];
+/* BAŞLAT */
 
-        renderFilterOptions();
+updateFilterUI();
 
-        updateFilterUI();
+updateSortButton();
 
-        updateSortButton();
+loadDeals();
 
-        renderDeals();
-
-    }
-
-
-    /* =========================================================
-       ZİYARET
-    ========================================================= */
-
-    async function trackVisit() {
-
-        try {
-
-            await supabaseClient
-                .from("site_visits")
-                .insert([
-                    {
-                        visited_at:
-                            new Date().toISOString()
-                    }
-                ]);
-
-        } catch (error) {
-
-            console.warn(
-                "Ziyaret kaydedilemedi:",
-                error
-            );
-
-        }
-
-    }
-
-
-    /* =========================================================
-       BAŞLAT
-    ========================================================= */
-
-    updateFilterUI();
-
-    updateSortButton();
-
-    loadDeals();
-
-    trackVisit();
+trackVisit();
 
 </script>
-
 
 </body>
 </html>
